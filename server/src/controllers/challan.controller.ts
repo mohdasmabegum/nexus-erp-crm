@@ -1,5 +1,4 @@
-import { Response } from "express";
-import { AuthRequest } from "../middleware/auth.middleware";
+import { Request, Response } from "express";
 import prisma from "../utils/prisma";
 
 const generateChallanNumber = async (): Promise<string> => {
@@ -7,11 +6,10 @@ const generateChallanNumber = async (): Promise<string> => {
   return `CH-${String(count + 1).padStart(5, "0")}`;
 };
 
-export const getChallans = async (req: AuthRequest, res: Response) => {
-  const q = req.query as Record<string, string>;
-  const page = parseInt(q.page ?? "1");
-  const limit = parseInt(q.limit ?? "20");
-  const status = q.status;
+export const getChallans = async (req: Request, res: Response) => {
+  const page: number = parseInt((req.query.page as string) ?? "1");
+  const limit: number = parseInt((req.query.limit as string) ?? "20");
+  const status: string | undefined = req.query.status as string | undefined;
   const skip = (page - 1) * limit;
   const where: any = status ? { status } : {};
 
@@ -26,7 +24,7 @@ export const getChallans = async (req: AuthRequest, res: Response) => {
   return res.json({ success: true, data: challans, total, page });
 };
 
-export const getChallan = async (req: AuthRequest, res: Response) => {
+export const getChallan = async (req: Request, res: Response) => {
   const challan = await prisma.challan.findUnique({
     where: { id: req.params.id },
     include: { customer: true, items: true, user: { select: { name: true } } },
@@ -35,7 +33,7 @@ export const getChallan = async (req: AuthRequest, res: Response) => {
   return res.json({ success: true, data: challan });
 };
 
-export const createChallan = async (req: AuthRequest, res: Response) => {
+export const createChallan = async (req: Request & { user?: any }, res: Response) => {
   try {
     const { customerId, items, status = "DRAFT" } = req.body;
     if (!customerId || !items?.length)
@@ -43,7 +41,7 @@ export const createChallan = async (req: AuthRequest, res: Response) => {
 
     const productIds: string[] = items.map((i: any) => i.productId);
     const products = await prisma.product.findMany({ where: { id: { in: productIds } } });
-    const productMap = Object.fromEntries(products.map((p) => [p.id, p]));
+    const productMap: Record<string, any> = Object.fromEntries(products.map((p) => [p.id, p]));
 
     for (const item of items) {
       if (!productMap[item.productId])
@@ -59,17 +57,13 @@ export const createChallan = async (req: AuthRequest, res: Response) => {
     }
 
     const challanNumber = await generateChallanNumber();
-    const totalQty = items.reduce((sum: number, i: any) => sum + parseInt(i.quantity), 0);
-    const userId: string = req.user!.id;
+    const totalQty: number = items.reduce((sum: number, i: any) => sum + parseInt(i.quantity), 0);
+    const userId: string = req.user.id;
 
     const challan = await prisma.$transaction(async (tx) => {
       const created = await tx.challan.create({
         data: {
-          challanNumber,
-          customerId,
-          totalQty,
-          status,
-          createdBy: userId,
+          challanNumber, customerId, totalQty, status, createdBy: userId,
           items: {
             create: items.map((item: any) => ({
               productId: item.productId,
@@ -91,7 +85,6 @@ export const createChallan = async (req: AuthRequest, res: Response) => {
           });
         }
       }
-
       return created;
     });
 
@@ -102,16 +95,13 @@ export const createChallan = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const updateChallanStatus = async (req: AuthRequest, res: Response) => {
+export const updateChallanStatus = async (req: Request & { user?: any }, res: Response) => {
   try {
     const { status } = req.body;
     if (!["CONFIRMED", "CANCELLED"].includes(status))
       return res.status(400).json({ success: false, message: "status must be CONFIRMED or CANCELLED" });
 
-    const challan: any = await prisma.challan.findUnique({
-      where: { id: req.params.id },
-      include: { items: true },
-    });
+    const challan: any = await prisma.challan.findUnique({ where: { id: req.params.id }, include: { items: true } });
     if (!challan) return res.status(404).json({ success: false, message: "Challan not found" });
     if (challan.status !== "DRAFT") return res.status(400).json({ success: false, message: "Only DRAFT challans can be updated" });
 
@@ -123,8 +113,7 @@ export const updateChallanStatus = async (req: AuthRequest, res: Response) => {
       }
     }
 
-    const userId: string = req.user!.id;
-
+    const userId: string = req.user.id;
     const updated = await prisma.$transaction(async (tx) => {
       const result = await tx.challan.update({ where: { id: req.params.id }, data: { status } });
       if (status === "CONFIRMED") {

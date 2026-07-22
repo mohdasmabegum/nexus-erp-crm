@@ -114,9 +114,9 @@ export const updateChallanStatus = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ success: false, message: "status must be CONFIRMED or CANCELLED" });
 
     const challan = await prisma.challan.findUnique({
-      where: { id: req.params.id },
+      where: { id: String(req.params.id) },
       include: { items: true },
-    });
+    }) as any;
     if (!challan) return res.status(404).json({ success: false, message: "Challan not found" });
     if (challan.status !== "DRAFT") return res.status(400).json({ success: false, message: "Only DRAFT challans can be updated" });
 

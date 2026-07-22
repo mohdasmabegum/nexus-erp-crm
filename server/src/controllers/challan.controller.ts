@@ -8,19 +8,16 @@ const generateChallanNumber = async (): Promise<string> => {
 };
 
 export const getChallans = async (req: AuthRequest, res: Response) => {
-  const page = parseInt(String(req.query.page ?? "1"));
-  const limit = parseInt(String(req.query.limit ?? "20"));
-  const status = req.query.status ? String(req.query.status) : undefined;
+  const q = req.query as Record<string, string>;
+  const page = parseInt(q.page ?? "1");
+  const limit = parseInt(q.limit ?? "20");
+  const status = q.status;
   const skip = (page - 1) * limit;
-
   const where: any = status ? { status } : {};
 
   const [challans, total] = await Promise.all([
     prisma.challan.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy: { createdAt: "desc" },
+      where, skip, take: limit, orderBy: { createdAt: "desc" },
       include: { customer: { select: { name: true, mobile: true } }, user: { select: { name: true } } },
     }),
     prisma.challan.count({ where }),
@@ -63,6 +60,7 @@ export const createChallan = async (req: AuthRequest, res: Response) => {
 
     const challanNumber = await generateChallanNumber();
     const totalQty = items.reduce((sum: number, i: any) => sum + parseInt(i.quantity), 0);
+    const userId: string = req.user!.id;
 
     const challan = await prisma.$transaction(async (tx) => {
       const created = await tx.challan.create({
@@ -71,7 +69,7 @@ export const createChallan = async (req: AuthRequest, res: Response) => {
           customerId,
           totalQty,
           status,
-          createdBy: req.user!.id,
+          createdBy: userId,
           items: {
             create: items.map((item: any) => ({
               productId: item.productId,
@@ -87,12 +85,9 @@ export const createChallan = async (req: AuthRequest, res: Response) => {
 
       if (status === "CONFIRMED") {
         for (const item of items) {
-          await tx.product.update({
-            where: { id: item.productId },
-            data: { stock: { decrement: parseInt(item.quantity) } },
-          });
+          await tx.product.update({ where: { id: item.productId }, data: { stock: { decrement: parseInt(item.quantity) } } });
           await tx.stockMovement.create({
-            data: { productId: item.productId, quantity: parseInt(item.quantity), type: "OUT", reason: `Challan ${challanNumber}`, createdBy: req.user!.id },
+            data: { productId: item.productId, quantity: parseInt(item.quantity), type: "OUT", reason: `Challan ${challanNumber}`, createdBy: userId },
           });
         }
       }
@@ -113,10 +108,10 @@ export const updateChallanStatus = async (req: AuthRequest, res: Response) => {
     if (!["CONFIRMED", "CANCELLED"].includes(status))
       return res.status(400).json({ success: false, message: "status must be CONFIRMED or CANCELLED" });
 
-    const challan = await prisma.challan.findUnique({
-      where: { id: String(req.params.id) },
+    const challan: any = await prisma.challan.findUnique({
+      where: { id: req.params.id },
       include: { items: true },
-    }) as any;
+    });
     if (!challan) return res.status(404).json({ success: false, message: "Challan not found" });
     if (challan.status !== "DRAFT") return res.status(400).json({ success: false, message: "Only DRAFT challans can be updated" });
 
@@ -128,18 +123,18 @@ export const updateChallanStatus = async (req: AuthRequest, res: Response) => {
       }
     }
 
+    const userId: string = req.user!.id;
+
     const updated = await prisma.$transaction(async (tx) => {
       const result = await tx.challan.update({ where: { id: req.params.id }, data: { status } });
-
       if (status === "CONFIRMED") {
         for (const item of challan.items) {
           await tx.product.update({ where: { id: item.productId }, data: { stock: { decrement: item.quantity } } });
           await tx.stockMovement.create({
-            data: { productId: item.productId, quantity: item.quantity, type: "OUT", reason: `Challan ${challan.challanNumber}`, createdBy: req.user!.id },
+            data: { productId: item.productId, quantity: item.quantity, type: "OUT", reason: `Challan ${challan.challanNumber}`, createdBy: userId },
           });
         }
       }
-
       return result;
     });
 

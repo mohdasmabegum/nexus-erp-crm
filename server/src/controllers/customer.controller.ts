@@ -3,10 +3,11 @@ import { AuthRequest } from "../middleware/auth.middleware";
 import prisma from "../utils/prisma";
 
 export const getCustomers = async (req: AuthRequest, res: Response) => {
-  const search = String(req.query.search ?? "");
-  const page = parseInt(String(req.query.page ?? "1"));
-  const limit = parseInt(String(req.query.limit ?? "20"));
-  const status = req.query.status ? String(req.query.status) : undefined;
+  const q = req.query as Record<string, string>;
+  const search = q.search ?? "";
+  const page = parseInt(q.page ?? "1");
+  const limit = parseInt(q.limit ?? "20");
+  const status = q.status ?? undefined;
   const skip = (page - 1) * limit;
 
   const where: any = {
@@ -51,7 +52,7 @@ export const updateCustomer = async (req: AuthRequest, res: Response) => {
   try {
     const { name, mobile, email, businessName, gst, type, address, status, followUpDate, notes } = req.body;
     const customer = await prisma.customer.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: { name, mobile, email, businessName, gst, type, address, status, followUpDate: followUpDate ? new Date(followUpDate) : undefined, notes },
     });
     return res.json({ success: true, data: customer });

@@ -3,9 +3,10 @@ import { AuthRequest } from "../middleware/auth.middleware";
 import prisma from "../utils/prisma";
 
 export const getProducts = async (req: AuthRequest, res: Response) => {
-  const search = String(req.query.search ?? "");
-  const page = parseInt(String(req.query.page ?? "1"));
-  const limit = parseInt(String(req.query.limit ?? "20"));
+  const q = req.query as Record<string, string>;
+  const search = q.search ?? "";
+  const page = parseInt(q.page ?? "1");
+  const limit = parseInt(q.limit ?? "20");
   const skip = (page - 1) * limit;
 
   const where = {
@@ -59,7 +60,7 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
   try {
     const { name, sku, category, unitPrice, minStockAlert, location } = req.body;
     const product = await prisma.product.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: {
         name, sku, category,
         unitPrice: unitPrice !== undefined ? parseFloat(unitPrice) : undefined,
@@ -80,7 +81,7 @@ export const addStockMovement = async (req: AuthRequest, res: Response) => {
     if (!["IN", "OUT"].includes(type)) return res.status(400).json({ success: false, message: "type must be IN or OUT" });
 
     const qty = parseInt(quantity);
-    const product = await prisma.product.findUnique({ where: { id: req.params.id } });
+    const product = await prisma.product.findUnique({ where: { id: req.params.id as string } });
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
 
     if (type === "OUT" && product.stock < qty)
@@ -88,7 +89,7 @@ export const addStockMovement = async (req: AuthRequest, res: Response) => {
 
     const [movement] = await prisma.$transaction([
       prisma.stockMovement.create({
-        data: { productId: req.params.id, quantity: qty, type, reason, createdBy: req.user!.id },
+        data: { productId: req.params.id as string, quantity: qty, type, reason, createdBy: req.user!.id },
       }),
       prisma.product.update({
         where: { id: req.params.id },

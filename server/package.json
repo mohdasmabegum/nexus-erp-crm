@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "railway:deploy": "npx prisma migrate deploy && npm run start",
     "prisma:generate": "prisma generate",

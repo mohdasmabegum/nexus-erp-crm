@@ -3,8 +3,11 @@ import { AuthRequest } from "../middleware/auth.middleware";
 import prisma from "../utils/prisma";
 
 export const getCustomers = async (req: AuthRequest, res: Response) => {
-  const { search = "", page = "1", limit = "20", status } = req.query as Record<string, string>;
-  const skip = (parseInt(page) - 1) * parseInt(limit);
+  const search = String(req.query.search ?? "");
+  const page = parseInt(String(req.query.page ?? "1"));
+  const limit = parseInt(String(req.query.limit ?? "20"));
+  const status = req.query.status ? String(req.query.status) : undefined;
+  const skip = (page - 1) * limit;
 
   const where: any = {
     OR: [
@@ -16,11 +19,11 @@ export const getCustomers = async (req: AuthRequest, res: Response) => {
   };
 
   const [customers, total] = await Promise.all([
-    prisma.customer.findMany({ where, skip, take: parseInt(limit), orderBy: { createdAt: "desc" } }),
+    prisma.customer.findMany({ where, skip, take: limit, orderBy: { createdAt: "desc" } }),
     prisma.customer.count({ where }),
   ]);
 
-  return res.json({ success: true, data: customers, total, page: parseInt(page) });
+  return res.json({ success: true, data: customers, total, page });
 };
 
 export const getCustomer = async (req: AuthRequest, res: Response) => {

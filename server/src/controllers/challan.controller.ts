@@ -8,8 +8,10 @@ const generateChallanNumber = async (): Promise<string> => {
 };
 
 export const getChallans = async (req: AuthRequest, res: Response) => {
-  const { page = "1", limit = "20", status } = req.query as Record<string, string>;
-  const skip = (parseInt(page) - 1) * parseInt(limit);
+  const page = parseInt(String(req.query.page ?? "1"));
+  const limit = parseInt(String(req.query.limit ?? "20"));
+  const status = req.query.status ? String(req.query.status) : undefined;
+  const skip = (page - 1) * limit;
 
   const where: any = status ? { status } : {};
 
@@ -17,14 +19,14 @@ export const getChallans = async (req: AuthRequest, res: Response) => {
     prisma.challan.findMany({
       where,
       skip,
-      take: parseInt(limit),
+      take: limit,
       orderBy: { createdAt: "desc" },
       include: { customer: { select: { name: true, mobile: true } }, user: { select: { name: true } } },
     }),
     prisma.challan.count({ where }),
   ]);
 
-  return res.json({ success: true, data: challans, total, page: parseInt(page) });
+  return res.json({ success: true, data: challans, total, page });
 };
 
 export const getChallan = async (req: AuthRequest, res: Response) => {
@@ -46,13 +48,11 @@ export const createChallan = async (req: AuthRequest, res: Response) => {
     const products = await prisma.product.findMany({ where: { id: { in: productIds } } });
     const productMap = Object.fromEntries(products.map((p) => [p.id, p]));
 
-    // Validate all products exist
     for (const item of items) {
       if (!productMap[item.productId])
         return res.status(400).json({ success: false, message: `Product ${item.productId} not found` });
     }
 
-    // If confirming immediately, check stock
     if (status === "CONFIRMED") {
       for (const item of items) {
         const product = productMap[item.productId];
@@ -92,13 +92,7 @@ export const createChallan = async (req: AuthRequest, res: Response) => {
             data: { stock: { decrement: parseInt(item.quantity) } },
           });
           await tx.stockMovement.create({
-            data: {
-              productId: item.productId,
-              quantity: parseInt(item.quantity),
-              type: "OUT",
-              reason: `Challan ${challanNumber}`,
-              createdBy: req.user!.id,
-            },
+            data: { productId: item.productId, quantity: parseInt(item.quantity), type: "OUT", reason: `Challan ${challanNumber}`, createdBy: req.user!.id },
           });
         }
       }
@@ -119,7 +113,10 @@ export const updateChallanStatus = async (req: AuthRequest, res: Response) => {
     if (!["CONFIRMED", "CANCELLED"].includes(status))
       return res.status(400).json({ success: false, message: "status must be CONFIRMED or CANCELLED" });
 
-    const challan = await prisma.challan.findUnique({ where: { id: req.params.id }, include: { items: true } });
+    const challan = await prisma.challan.findUnique({
+      where: { id: req.params.id },
+      include: { items: true },
+    });
     if (!challan) return res.status(404).json({ success: false, message: "Challan not found" });
     if (challan.status !== "DRAFT") return res.status(400).json({ success: false, message: "Only DRAFT challans can be updated" });
 

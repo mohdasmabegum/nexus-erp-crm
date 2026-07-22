@@ -3,8 +3,10 @@ import { AuthRequest } from "../middleware/auth.middleware";
 import prisma from "../utils/prisma";
 
 export const getProducts = async (req: AuthRequest, res: Response) => {
-  const { search = "", page = "1", limit = "20" } = req.query as Record<string, string>;
-  const skip = (parseInt(page) - 1) * parseInt(limit);
+  const search = String(req.query.search ?? "");
+  const page = parseInt(String(req.query.page ?? "1"));
+  const limit = parseInt(String(req.query.limit ?? "20"));
+  const skip = (page - 1) * limit;
 
   const where = {
     OR: [
@@ -15,11 +17,11 @@ export const getProducts = async (req: AuthRequest, res: Response) => {
   };
 
   const [products, total] = await Promise.all([
-    prisma.product.findMany({ where, skip, take: parseInt(limit), orderBy: { createdAt: "desc" } }),
+    prisma.product.findMany({ where, skip, take: limit, orderBy: { createdAt: "desc" } }),
     prisma.product.count({ where }),
   ]);
 
-  return res.json({ success: true, data: products, total, page: parseInt(page) });
+  return res.json({ success: true, data: products, total, page });
 };
 
 export const getProduct = async (req: AuthRequest, res: Response) => {
@@ -38,7 +40,13 @@ export const createProduct = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ success: false, message: "name, sku and unitPrice are required" });
 
     const product = await prisma.product.create({
-      data: { name, sku, category, unitPrice: parseFloat(unitPrice), stock: parseInt(stock ?? 0), minStockAlert: parseInt(minStockAlert ?? 0), location },
+      data: {
+        name, sku, category,
+        unitPrice: parseFloat(unitPrice),
+        stock: parseInt(stock ?? 0),
+        minStockAlert: parseInt(minStockAlert ?? 0),
+        location,
+      },
     });
     return res.status(201).json({ success: true, data: product });
   } catch (error: any) {
@@ -52,7 +60,12 @@ export const updateProduct = async (req: AuthRequest, res: Response) => {
     const { name, sku, category, unitPrice, minStockAlert, location } = req.body;
     const product = await prisma.product.update({
       where: { id: req.params.id },
-      data: { name, sku, category, unitPrice: unitPrice !== undefined ? parseFloat(unitPrice) : undefined, minStockAlert: minStockAlert !== undefined ? parseInt(minStockAlert) : undefined, location },
+      data: {
+        name, sku, category,
+        unitPrice: unitPrice !== undefined ? parseFloat(unitPrice) : undefined,
+        minStockAlert: minStockAlert !== undefined ? parseInt(minStockAlert) : undefined,
+        location,
+      },
     });
     return res.json({ success: true, data: product });
   } catch {

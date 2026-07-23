@@ -18,7 +18,16 @@ app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.get(["/health", "/api/health"], (_, res) => res.json({ success: true, message: "Nexus ERP CRM API Running" }));
+// API root and health check endpoint
+app.get(["/", "/api", "/health", "/api/health"], (_, res) => {
+  res.json({
+    success: true,
+    name: "Nexus ERP CRM API",
+    status: "online",
+    timestamp: new Date().toISOString(),
+    message: "Nexus ERP CRM API is running successfully",
+  });
+});
 
 app.use(["/api/auth", "/auth"], authRoutes);
 app.use(["/api/customers", "/customers"], customerRoutes);

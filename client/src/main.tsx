@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "./AuthContext";
 import { ThemeProvider, useThemeMode } from "./ThemeContext";
 import { getTheme } from "./theme";
 import Layout from "./Layout";
+import WelcomePage from "./pages/WelcomePage";
 import LoginPage from "./pages/LoginPage";
 import DashboardPage from "./pages/DashboardPage";
 import CustomersPage from "./pages/CustomersPage";
@@ -19,7 +20,7 @@ import AuditTrailPage from "./pages/AuditTrailPage";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  return user ? <Layout>{children}</Layout> : <Navigate to="/login" replace />;
+  return user ? <Layout>{children}</Layout> : <Navigate to="/welcome" replace />;
 }
 
 function ThemedApp() {
@@ -31,6 +32,7 @@ function ThemedApp() {
       <AuthProvider>
         <BrowserRouter>
           <Routes>
+            <Route path="/welcome" element={<WelcomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
             <Route path="/customers" element={<PrivateRoute><CustomersPage /></PrivateRoute>} />
@@ -40,7 +42,7 @@ function ThemedApp() {
             <Route path="/audit" element={<PrivateRoute><AuditTrailPage /></PrivateRoute>} />
             <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
             <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/welcome" replace />} />
           </Routes>
         </BrowserRouter>
       </AuthProvider>

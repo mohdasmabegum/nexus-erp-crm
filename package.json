@@ -2,11 +2,11 @@
   "name": "nexus-erp-crm-server",
   "version": "1.0.0",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "dev": "npm --prefix server run dev",
+    "build": "npm --prefix server run build",
+    "start": "npm --prefix server run start",
+    "prisma:generate": "npm --prefix server run prisma:generate",
+    "prisma:migrate": "npm --prefix server run prisma:migrate"
   },
   "dependencies": {
     "@prisma/client": "^6.0.0",

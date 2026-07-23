@@ -47,11 +47,21 @@ export default function LoginPage() {
     }
   };
 
-  const fillCredential = (cred: typeof credentials[0]) => {
+  const handleQuickLogin = async (cred: typeof credentials[0]) => {
     setEmail(cred.email);
     setPassword(cred.password);
     setError("");
-    toast.success(`Loaded demo credentials for ${cred.role}`);
+    setLoading(true);
+    try {
+      const { data } = await api.post("/auth/login", { email: cred.email, password: cred.password });
+      login(data.token, data.user);
+      toast.success(`Logged in as ${data.user.name} (${cred.role})`);
+      navigate("/");
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Quick login failed.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -233,7 +243,7 @@ export default function LoginPage() {
 
               <Divider sx={{ my: 3.5, borderColor: "rgba(255,255,255,0.15)" }}>
                 <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.7)", fontWeight: 700, letterSpacing: "0.08em" }}>
-                  DEMO QUICK LOGIN
+                  INSTANT DEMO LOGIN
                 </Typography>
               </Divider>
 
@@ -246,7 +256,8 @@ export default function LoginPage() {
                       label={c.role}
                       color={c.color}
                       clickable
-                      onClick={() => fillCredential(c)}
+                      disabled={loading}
+                      onClick={() => handleQuickLogin(c)}
                       sx={{
                         fontWeight: 700,
                         fontSize: "0.75rem",
@@ -261,7 +272,7 @@ export default function LoginPage() {
               </Stack>
 
               <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.65)", display: "block", textAlign: "center", mt: 1.5, fontSize: "0.75rem" }}>
-                Click any role above to auto-fill credentials
+                Tap any role chip above to log in instantly & redirect to dashboard
               </Typography>
             </CardContent>
           </Card>

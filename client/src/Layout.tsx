@@ -1,11 +1,11 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText,
   AppBar, Toolbar, Typography, IconButton, Chip, Tooltip, Avatar,
-  Breadcrumbs, Link, InputBase, Badge, useMediaQuery, useTheme as useMuiTheme,
-  Divider,
+  Breadcrumbs, InputBase, useMediaQuery, useTheme as useMuiTheme,
+  Divider, Dialog, DialogContent, ListSubheader,
 } from "@mui/material";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
@@ -20,6 +20,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
+import HistoryIcon from "@mui/icons-material/History";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { useAuth } from "./AuthContext";
 import { useThemeMode } from "./ThemeContext";
@@ -32,6 +33,7 @@ const navItems = [
   { label: "Products", icon: <InventoryIcon />, path: "/products", description: "Catalog & Stock" },
   { label: "Inventory", icon: <WarehouseIcon />, path: "/inventory", description: "Stock Movements" },
   { label: "Challans", icon: <ReceiptIcon />, path: "/challans", description: "Sales & Invoices" },
+  { label: "Activity Audit", icon: <HistoryIcon />, path: "/audit", description: "Logs & Trail" },
 ];
 
 const roleColors: Record<string, "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning"> = {
@@ -44,6 +46,7 @@ const pageTitles: Record<string, string[]> = {
   "/products": ["Products & Inventory"],
   "/inventory": ["Inventory", "Stock Log"],
   "/challans": ["Sales", "Challans"],
+  "/audit": ["Activity Audit"],
   "/profile": ["Profile"],
   "/settings": ["Settings"],
 };
@@ -56,8 +59,27 @@ export default function Layout({ children }: { children: ReactNode }) {
   const muiTheme = useMuiTheme();
   const isMobile = useMediaQuery(muiTheme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const breadcrumbs = pageTitles[location.pathname] ?? ["Page"];
+
+  // Keyboard shortcut Ctrl+K or Cmd+K
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchModalOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  const searchResults = navItems.filter((item) =>
+    item.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    item.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const drawerContent = (
     <>
@@ -103,7 +125,7 @@ export default function Layout({ children }: { children: ReactNode }) {
                   onClick={() => { navigate(item.path); if (isMobile) setMobileOpen(false); }}
                   sx={{
                     borderRadius: "10px",
-                    py: 1,
+                    py: 0.9,
                     px: 1.5,
                     color: active ? "#fff" : "rgba(255,255,255,0.55)",
                     bgcolor: active ? "rgba(37,99,235,0.85)" : "transparent",
@@ -118,14 +140,14 @@ export default function Layout({ children }: { children: ReactNode }) {
                     transition: "all 0.2s ease",
                   }}
                 >
-                  <ListItemIcon sx={{ color: "inherit", minWidth: 36, opacity: active ? 1 : 0.7 }}>
+                  <ListItemIcon sx={{ color: "inherit", minWidth: 34, opacity: active ? 1 : 0.7 }}>
                     {item.icon}
                   </ListItemIcon>
                   <ListItemText
                     primary={item.label}
                     secondary={item.description}
-                    primaryTypographyProps={{ fontWeight: active ? 700 : 500, fontSize: "0.875rem" }}
-                    secondaryTypographyProps={{ fontSize: "0.65rem", color: active ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.3)", sx: { mt: 0 } }}
+                    primaryTypographyProps={{ fontWeight: active ? 700 : 500, fontSize: "0.85rem" }}
+                    secondaryTypographyProps={{ fontSize: "0.62rem", color: active ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.3)", sx: { mt: 0 } }}
                   />
                   {active && (
                     <Box sx={{ width: 6, height: 6, borderRadius: "50%", bgcolor: "#60a5fa", flexShrink: 0 }} />
@@ -245,24 +267,26 @@ export default function Layout({ children }: { children: ReactNode }) {
 
           {/* Right side actions */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            {/* Global Search */}
-            <Box sx={{
-              display: { xs: "none", md: "flex" },
-              alignItems: "center", gap: 1,
-              bgcolor: mode === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.06)",
-              border: "1px solid",
-              borderColor: "divider",
-              borderRadius: "10px",
-              px: 1.5, py: 0.6, mr: 1,
-              cursor: "text",
-              transition: "all 0.2s",
-              "&:hover": { borderColor: "primary.main", bgcolor: mode === "light" ? "rgba(37,99,235,0.04)" : "rgba(37,99,235,0.08)" },
-            }}>
+            {/* Global Search Button */}
+            <Box
+              onClick={() => setSearchModalOpen(true)}
+              sx={{
+                display: { xs: "none", md: "flex" },
+                alignItems: "center", gap: 1,
+                bgcolor: mode === "light" ? "rgba(15,23,42,0.04)" : "rgba(255,255,255,0.06)",
+                border: "1px solid",
+                borderColor: "divider",
+                borderRadius: "10px",
+                px: 1.5, py: 0.6, mr: 1,
+                cursor: "pointer",
+                transition: "all 0.2s",
+                "&:hover": { borderColor: "primary.main", bgcolor: mode === "light" ? "rgba(37,99,235,0.04)" : "rgba(37,99,235,0.08)" },
+              }}
+            >
               <SearchIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-              <InputBase
-                placeholder="Quick search…"
-                sx={{ fontSize: "0.8rem", color: "text.secondary", width: 160, "& input": { p: 0 } }}
-              />
+              <Typography variant="caption" color="text.secondary" sx={{ width: 140 }}>
+                Quick search…
+              </Typography>
               <Typography variant="caption" sx={{ color: "text.secondary", bgcolor: "action.hover", px: 0.75, py: 0.2, borderRadius: 1, fontSize: "0.65rem", fontWeight: 600 }}>
                 ⌘K
               </Typography>
@@ -275,7 +299,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               </IconButton>
             </Tooltip>
 
-            {/* User avatar (desktop only) */}
+            {/* User avatar */}
             <Tooltip title={`${user?.name} — ${user?.role}`}>
               <Box
                 sx={{ display: { xs: "none", sm: "flex" }, alignItems: "center", gap: 1, cursor: "pointer", px: 1, py: 0.5, borderRadius: "10px", "&:hover": { bgcolor: "action.hover" } }}
@@ -295,6 +319,58 @@ export default function Layout({ children }: { children: ReactNode }) {
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Global Search Command Modal */}
+      <Dialog
+        open={searchModalOpen}
+        onClose={() => setSearchModalOpen(false)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: { borderRadius: 4, top: -100 },
+          component: motion.div,
+          initial: { opacity: 0, scale: 0.95 },
+          animate: { opacity: 1, scale: 1 },
+        } as any}
+      >
+        <DialogContent sx={{ p: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, borderBottom: "1px solid", borderColor: "divider", pb: 1, mb: 1 }}>
+            <SearchIcon color="primary" />
+            <InputBase
+              autoFocus
+              fullWidth
+              placeholder="Search module or page..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{ fontSize: "0.95rem" }}
+            />
+          </Box>
+          <List disablePadding>
+            <ListSubheader sx={{ bgcolor: "transparent", fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", px: 1, py: 0.5 }}>
+              Pages & Modules
+            </ListSubheader>
+            {searchResults.map((item) => (
+              <ListItemButton
+                key={item.path}
+                onClick={() => {
+                  navigate(item.path);
+                  setSearchModalOpen(false);
+                  setSearchQuery("");
+                }}
+                sx={{ borderRadius: 2, py: 1 }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: "primary.main" }}>{item.icon}</ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  secondary={item.description}
+                  primaryTypographyProps={{ fontWeight: 600, fontSize: "0.85rem" }}
+                  secondaryTypographyProps={{ fontSize: "0.7rem" }}
+                />
+              </ListItemButton>
+            ))}
+          </List>
+        </DialogContent>
+      </Dialog>
 
       {/* Desktop Drawer */}
       {!isMobile && (

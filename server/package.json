@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "build": "prisma generate",
-    "start": "npx prisma migrate deploy && tsx src/server.ts",
+    "build": "prisma generate && tsc",
+    "start": "npx prisma migrate deploy && node_modules/.bin/tsx src/server.ts",
     "railway:deploy": "npx prisma migrate deploy && npm run start",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -32,7 +32,6 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/node": "^22.10.0",
     "prisma": "^6.0.0",
-    "tsx": "^4.19.2",
     "typescript": "^5.7.2"
   }
 }

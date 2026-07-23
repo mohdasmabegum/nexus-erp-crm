@@ -15,6 +15,13 @@ Mini ERP + CRM Operations Portal for wholesale/distribution companies.
 
 ---
 
+## Live Deployment Links
+
+- **Live Frontend Web App**: [https://nexus-erp-crm-beta.vercel.app/](https://nexus-erp-crm-beta.vercel.app/)
+- **GitHub Repository**: [https://github.com/mohdasmabegum/nexus-erp-crm](https://github.com/mohdasmabegum/nexus-erp-crm.git)
+
+---
+
 ## Features & Modules
 
 - **Authentication & Roles**: JWT login supporting 4 roles (`ADMIN`, `SALES`, `WAREHOUSE`, `ACCOUNTS`).

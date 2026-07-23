@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
@@ -20,7 +20,31 @@ import AuditTrailPage from "./pages/AuditTrailPage";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  return user ? <Layout>{children}</Layout> : <Navigate to="/welcome" replace />;
+  return user ? <Layout>{children}</Layout> : <Navigate to="/login" replace />;
+}
+
+function MainAppRoutes() {
+  const [hasSeenSplash, setHasSeenSplash] = useState(false);
+
+  if (!hasSeenSplash) {
+    return <WelcomePage onComplete={() => setHasSeenSplash(true)} />;
+  }
+
+  return (
+    <Routes>
+      <Route path="/welcome" element={<WelcomePage onComplete={() => setHasSeenSplash(true)} />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+      <Route path="/customers" element={<PrivateRoute><CustomersPage /></PrivateRoute>} />
+      <Route path="/products" element={<PrivateRoute><ProductsPage /></PrivateRoute>} />
+      <Route path="/inventory" element={<PrivateRoute><InventoryPage /></PrivateRoute>} />
+      <Route path="/challans" element={<PrivateRoute><ChallansPage /></PrivateRoute>} />
+      <Route path="/audit" element={<PrivateRoute><AuditTrailPage /></PrivateRoute>} />
+      <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+      <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
 
 function ThemedApp() {
@@ -31,19 +55,7 @@ function ThemedApp() {
       <Toaster position="top-right" toastOptions={{ style: { borderRadius: 10, fontFamily: "Inter, sans-serif" } }} />
       <AuthProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/welcome" element={<WelcomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
-            <Route path="/customers" element={<PrivateRoute><CustomersPage /></PrivateRoute>} />
-            <Route path="/products" element={<PrivateRoute><ProductsPage /></PrivateRoute>} />
-            <Route path="/inventory" element={<PrivateRoute><InventoryPage /></PrivateRoute>} />
-            <Route path="/challans" element={<PrivateRoute><ChallansPage /></PrivateRoute>} />
-            <Route path="/audit" element={<PrivateRoute><AuditTrailPage /></PrivateRoute>} />
-            <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
-            <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
-            <Route path="*" element={<Navigate to="/welcome" replace />} />
-          </Routes>
+          <MainAppRoutes />
         </BrowserRouter>
       </AuthProvider>
     </MuiThemeProvider>

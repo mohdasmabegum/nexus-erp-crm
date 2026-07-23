@@ -3,11 +3,25 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Box, Typography, Button, LinearProgress, Container } from "@mui/material";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useAuth } from "../AuthContext";
 
-export default function WelcomePage() {
+interface WelcomePageProps {
+  onComplete?: () => void;
+}
+
+export default function WelcomePage({ onComplete }: WelcomePageProps) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [progress, setProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState(5);
+
+  const handleFinish = () => {
+    if (onComplete) {
+      onComplete();
+    } else {
+      navigate(user ? "/" : "/login", { replace: true });
+    }
+  };
 
   useEffect(() => {
     const duration = 4800; // 4.8 seconds
@@ -18,7 +32,7 @@ export default function WelcomePage() {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(timer);
-          navigate("/login", { replace: true });
+          handleFinish();
           return 100;
         }
         const next = prev + step;
@@ -28,7 +42,7 @@ export default function WelcomePage() {
     }, intervalTime);
 
     return () => clearInterval(timer);
-  }, [navigate]);
+  }, []);
 
   return (
     <Box
@@ -161,7 +175,7 @@ export default function WelcomePage() {
             variant="contained"
             size="large"
             endIcon={<ArrowForwardIcon />}
-            onClick={() => navigate("/login", { replace: true })}
+            onClick={handleFinish}
             sx={{
               py: 1.5,
               px: 4.5,
@@ -176,7 +190,7 @@ export default function WelcomePage() {
               },
             }}
           >
-            Continue to Login
+            Continue to App
           </Button>
         </motion.div>
       </Container>

@@ -26,7 +26,7 @@ export const getCustomers = async (req: Request, res: Response) => {
 };
 
 export const getCustomer = async (req: Request, res: Response) => {
-  const customer = await prisma.customer.findUnique({ where: { id: req.params.id } });
+  const customer = await prisma.customer.findUnique({ where: { id: req.params.id as string } });
   if (!customer) return res.status(404).json({ success: false, message: "Customer not found" });
   return res.json({ success: true, data: customer });
 };
@@ -49,7 +49,7 @@ export const updateCustomer = async (req: Request, res: Response) => {
   try {
     const { name, mobile, email, businessName, gst, type, address, status, followUpDate, notes } = req.body;
     const customer = await prisma.customer.update({
-      where: { id: req.params.id },
+      where: { id: req.params.id as string },
       data: { name, mobile, email, businessName, gst, type, address, status, followUpDate: followUpDate ? new Date(followUpDate) : undefined, notes },
     });
     return res.json({ success: true, data: customer });

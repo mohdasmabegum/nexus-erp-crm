@@ -9,6 +9,9 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import DeleteIcon from "@mui/icons-material/Delete";
+import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import api from "../api";
 import { useAuth } from "../AuthContext";
 
@@ -53,6 +56,58 @@ export default function ChallansPage() {
   const openDetail = async (id: string) => {
     const { data } = await api.get(`/challans/${id}`);
     setDetail(data.data); setDetailOpen(true);
+  };
+
+  const exportPdf = () => {
+    if (!detail) return;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.setTextColor(33, 150, 243);
+    doc.text("NEXUS ERP / CRM OPERATIONS", 14, 20);
+
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text("SALES CHALLAN / INVOICE", 14, 27);
+
+    doc.setFontSize(10);
+    doc.setTextColor(0);
+    doc.text(`Challan Number: ${detail.challanNumber}`, 14, 38);
+    doc.text(`Date: ${new Date(detail.createdAt).toLocaleDateString()}`, 14, 44);
+    doc.text(`Status: ${detail.status}`, 14, 50);
+
+    doc.text(`Customer: ${detail.customer?.name || "N/A"}`, 120, 38);
+    doc.text(`Mobile: ${detail.customer?.mobile || "N/A"}`, 120, 44);
+    doc.text(`Address: ${detail.customer?.address || "N/A"}`, 120, 50);
+
+    const tableData = detail.items?.map((it: any) => [
+      it.productName,
+      it.productSku,
+      it.quantity,
+      `₹${it.unitPrice}`,
+      `₹${(it.quantity * it.unitPrice).toFixed(2)}`
+    ]) || [];
+
+    const grandTotal = detail.items?.reduce((sum: number, it: any) => sum + (it.quantity * it.unitPrice), 0) || 0;
+
+    autoTable(doc, {
+      startY: 58,
+      head: [["Product Name", "SKU", "Quantity", "Unit Price", "Total Price"]],
+      body: tableData,
+      theme: "striped",
+      headStyles: { fillColor: [33, 150, 243] },
+    });
+
+    const finalY = (doc as any).lastAutoTable ? (doc as any).lastAutoTable.finalY + 12 : 100;
+    doc.setFontSize(12);
+    doc.text(`Grand Total: ₹${grandTotal.toFixed(2)}`, 14, finalY);
+
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text("Thank you for your business!", 14, finalY + 15);
+    doc.text("Authorized Signature: _______________________", 110, finalY + 15);
+
+    doc.save(`Invoice_${detail.challanNumber}.pdf`);
   };
 
   const setItem = (i: number, key: keyof LineItem, value: any) =>
@@ -176,7 +231,10 @@ export default function ChallansPage() {
 
       {/* Detail Dialog */}
       <Dialog open={detailOpen} onClose={() => setDetailOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Challan — {detail?.challanNumber}</DialogTitle>
+        <DialogTitle sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span>Challan — {detail?.challanNumber}</span>
+          <Button variant="outlined" size="small" startIcon={<PictureAsPdfIcon />} onClick={exportPdf}>Export Invoice PDF</Button>
+        </DialogTitle>
         <DialogContent>
           <Typography variant="body2" mb={1}><b>Customer:</b> {detail?.customer?.name}</Typography>
           <Typography variant="body2" mb={1}><b>Status:</b> {detail?.status}</Typography>

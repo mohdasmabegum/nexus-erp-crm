@@ -25,7 +25,7 @@ export const getProducts = async (req: Request, res: Response) => {
 
 export const getProduct = async (req: Request, res: Response) => {
   const product = await prisma.product.findUnique({
-    where: { id: req.params.id },
+    where: { id: req.params.id as string },
     include: { stockMovements: { orderBy: { createdAt: "desc" }, take: 20, include: { user: { select: { name: true } } } } },
   });
   if (!product) return res.status(404).json({ success: false, message: "Product not found" });
@@ -34,11 +34,11 @@ export const getProduct = async (req: Request, res: Response) => {
 
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { name, sku, category, unitPrice, stock, minStockAlert, location } = req.body;
+    const { name, sku, category, unitPrice, stock, minStockAlert, location, imageUrl } = req.body;
     if (!name || !sku || unitPrice === undefined)
       return res.status(400).json({ success: false, message: "name, sku and unitPrice are required" });
     const product = await prisma.product.create({
-      data: { name, sku, category, unitPrice: parseFloat(unitPrice), stock: parseInt(stock ?? 0), minStockAlert: parseInt(minStockAlert ?? 0), location },
+      data: { name, sku, category, unitPrice: parseFloat(unitPrice), stock: parseInt(stock ?? 0), minStockAlert: parseInt(minStockAlert ?? 0), location, imageUrl },
     });
     return res.status(201).json({ success: true, data: product });
   } catch (error: any) {
@@ -49,10 +49,10 @@ export const createProduct = async (req: Request, res: Response) => {
 
 export const updateProduct = async (req: Request, res: Response) => {
   try {
-    const { name, sku, category, unitPrice, minStockAlert, location } = req.body;
+    const { name, sku, category, unitPrice, minStockAlert, location, imageUrl } = req.body;
     const product = await prisma.product.update({
-      where: { id: req.params.id },
-      data: { name, sku, category, unitPrice: unitPrice !== undefined ? parseFloat(unitPrice) : undefined, minStockAlert: minStockAlert !== undefined ? parseInt(minStockAlert) : undefined, location },
+      where: { id: req.params.id as string },
+      data: { name, sku, category, unitPrice: unitPrice !== undefined ? parseFloat(unitPrice) : undefined, minStockAlert: minStockAlert !== undefined ? parseInt(minStockAlert) : undefined, location, imageUrl },
     });
     return res.json({ success: true, data: product });
   } catch {
@@ -67,7 +67,7 @@ export const addStockMovement = async (req: Request & { user?: any }, res: Respo
     if (!["IN", "OUT"].includes(type)) return res.status(400).json({ success: false, message: "type must be IN or OUT" });
 
     const qty: number = parseInt(quantity);
-    const productId: string = req.params.id;
+    const productId: string = req.params.id as string;
     const product = await prisma.product.findUnique({ where: { id: productId } });
     if (!product) return res.status(404).json({ success: false, message: "Product not found" });
     if (type === "OUT" && product.stock < qty)

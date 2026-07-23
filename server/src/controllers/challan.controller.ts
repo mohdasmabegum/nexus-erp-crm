@@ -26,7 +26,7 @@ export const getChallans = async (req: Request, res: Response) => {
 
 export const getChallan = async (req: Request, res: Response) => {
   const challan = await prisma.challan.findUnique({
-    where: { id: req.params.id },
+    where: { id: req.params.id as string },
     include: { customer: true, items: true, user: { select: { name: true } } },
   });
   if (!challan) return res.status(404).json({ success: false, message: "Challan not found" });
@@ -101,7 +101,7 @@ export const updateChallanStatus = async (req: Request & { user?: any }, res: Re
     if (!["CONFIRMED", "CANCELLED"].includes(status))
       return res.status(400).json({ success: false, message: "status must be CONFIRMED or CANCELLED" });
 
-    const challan: any = await prisma.challan.findUnique({ where: { id: req.params.id }, include: { items: true } });
+    const challan: any = await prisma.challan.findUnique({ where: { id: req.params.id as string }, include: { items: true } });
     if (!challan) return res.status(404).json({ success: false, message: "Challan not found" });
     if (challan.status !== "DRAFT") return res.status(400).json({ success: false, message: "Only DRAFT challans can be updated" });
 
@@ -115,7 +115,7 @@ export const updateChallanStatus = async (req: Request & { user?: any }, res: Re
 
     const userId: string = req.user.id;
     const updated = await prisma.$transaction(async (tx) => {
-      const result = await tx.challan.update({ where: { id: req.params.id }, data: { status } });
+      const result = await tx.challan.update({ where: { id: req.params.id as string }, data: { status } });
       if (status === "CONFIRMED") {
         for (const item of challan.items) {
           await tx.product.update({ where: { id: item.productId }, data: { stock: { decrement: item.quantity } } });

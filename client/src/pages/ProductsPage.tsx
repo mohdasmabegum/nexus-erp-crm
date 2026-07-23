@@ -12,7 +12,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import api from "../api";
 import { useAuth } from "../AuthContext";
 
-const emptyForm = { name: "", sku: "", category: "", unitPrice: "", stock: "0", minStockAlert: "0", location: "" };
+const emptyForm = { name: "", sku: "", category: "", unitPrice: "", stock: "0", minStockAlert: "0", location: "", imageUrl: "" };
 const emptyStock = { quantity: "", type: "IN", reason: "" };
 
 export default function ProductsPage() {
@@ -45,7 +45,7 @@ export default function ProductsPage() {
   const openAdd = () => { setEditing(null); setForm(emptyForm); setError(""); setOpen(true); };
   const openEdit = (p: any) => {
     setEditing(p);
-    setForm({ name: p.name, sku: p.sku, category: p.category ?? "", unitPrice: String(p.unitPrice), stock: String(p.stock), minStockAlert: String(p.minStockAlert), location: p.location ?? "" });
+    setForm({ name: p.name, sku: p.sku, category: p.category ?? "", unitPrice: String(p.unitPrice), stock: String(p.stock), minStockAlert: String(p.minStockAlert), location: p.location ?? "", imageUrl: p.imageUrl ?? "" });
     setError(""); setOpen(true);
   };
   const openStock = (p: any) => { setSelectedProduct(p); setStockForm(emptyStock); setStockError(""); setStockOpen(true); };
@@ -88,7 +88,7 @@ export default function ProductsPage() {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>Name</TableCell><TableCell>SKU</TableCell><TableCell>Category</TableCell>
+            <TableCell>Image</TableCell><TableCell>Name</TableCell><TableCell>SKU</TableCell><TableCell>Category</TableCell>
             <TableCell>Unit Price</TableCell><TableCell>Stock</TableCell><TableCell>Location</TableCell>
             {canWrite && <TableCell>Actions</TableCell>}
           </TableRow>
@@ -96,6 +96,15 @@ export default function ProductsPage() {
         <TableBody>
           {products.map((p) => (
             <TableRow key={p.id} hover>
+              <TableCell>
+                {p.imageUrl ? (
+                  <Box component="img" src={p.imageUrl} alt={p.name} sx={{ width: 36, height: 36, borderRadius: 1, objectFit: "cover" }} />
+                ) : (
+                  <Box sx={{ width: 36, height: 36, borderRadius: 1, bgcolor: "#e0e0e0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, color: "#666" }}>
+                    No Img
+                  </Box>
+                )}
+              </TableCell>
               <TableCell>{p.name}</TableCell>
               <TableCell>{p.sku}</TableCell>
               <TableCell>{p.category ?? "-"}</TableCell>
@@ -112,7 +121,7 @@ export default function ProductsPage() {
               )}
             </TableRow>
           ))}
-          {products.length === 0 && <TableRow><TableCell colSpan={7} align="center">No products found</TableCell></TableRow>}
+          {products.length === 0 && <TableRow><TableCell colSpan={8} align="center">No products found</TableCell></TableRow>}
         </TableBody>
       </Table>
 
@@ -138,6 +147,7 @@ export default function ProductsPage() {
             <TextField label="Min Stock Alert" type="number" value={form.minStockAlert} onChange={f("minStockAlert")} fullWidth />
             <TextField label="Location" value={form.location} onChange={f("location")} fullWidth />
           </Box>
+          <TextField label="Image URL (AWS S3 or CDN)" value={form.imageUrl} onChange={f("imageUrl")} placeholder="https://example.com/image.png" fullWidth />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>

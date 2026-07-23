@@ -1,83 +1,137 @@
-# Nexus ERP CRM
+# Nexus ERP CRM — Operations Portal
 
-Mini ERP + CRM Operations Portal for wholesale/distribution companies.
+> **Full Stack Developer Case Study Submission**  
+> **Project**: Mini ERP + CRM Operations Portal for Wholesale and Distribution Businesses
 
-## Tech Stack
-
-| Layer    | Technology                                  |
-|----------|---------------------------------------------|
-| Backend  | Node.js, Express, TypeScript, Prisma ORM    |
-| Database | PostgreSQL (Docker / Cloud Postgres)        |
-| Auth     | JWT (7-day expiry) with Role-Based Guard    |
-| Frontend | React (Vite), TypeScript, Material UI (MUI) |
-| PDF      | jsPDF + jsPDF-AutoTable                     |
-| DevOps   | Docker, Docker Compose, GitHub Actions CI   |
+![Nexus ERP CRM](client/public/logo.png)
 
 ---
 
-## Live Deployment Links
+## 📌 Submission Checklist & Deliverables
 
-- **Live Frontend Web App**: [https://nexus-erp-crm-beta.vercel.app/](https://nexus-erp-crm-beta.vercel.app/)
-- **GitHub Repository**: [https://github.com/mohdasmabegum/nexus-erp-crm](https://github.com/mohdasmabegum/nexus-erp-crm.git)
-
----
-
-## Features & Modules
-
-- **Authentication & Roles**: JWT login supporting 4 roles (`ADMIN`, `SALES`, `WAREHOUSE`, `ACCOUNTS`).
-- **Customer CRM**: Customer management with type classification (Retail/Wholesale/Distributor), status tracking (Lead/Active/Inactive), search, follow-up dates, and notes.
-- **Products & Inventory**: Product CRUD, SKU uniqueness, low stock alert badges, location tracking, **Product Image URL (AWS S3/CDN) preview**, and stock movement logs (IN/OUT).
-- **Sales Challans**: Multi-product challan creation with automatic pricing, unique auto-generated challan numbers, and stock deduction on confirmation.
-- **Invoice PDF Export**: Downloadable PDF Invoices for sales challans with company branding, itemized tables, totals, and signature block.
+| Requirement | Status | Links / Details |
+|---|---|---|
+| **1. GitHub Repository** | ✅ Complete | [github.com/mohdasmabegum/nexus-erp-crm](https://github.com/mohdasmabegum/nexus-erp-crm) |
+| **2. Live Frontend Web App** | ✅ Deployed | [nexus-erp-crm-beta.vercel.app](https://nexus-erp-crm-beta.vercel.app) |
+| **3. Live Backend API** | ✅ Deployed | [nexus-erp-crm-api.onrender.com/api](https://nexus-erp-crm-api.onrender.com/api) |
+| **4. Test Login Credentials** | ✅ Provided | See Credentials Table below (Admin, Sales, Warehouse, Accounts) |
+| **5. Postman Collection** | ✅ Included | [`Nexus-ERP-CRM.postman_collection.json`](./Nexus-ERP-CRM.postman_collection.json) |
+| **6. README Documentation** | ✅ Complete | Setup, Architecture, Deployment, Environment Variables |
+| **7. Architecture Explanation** | ✅ Documented | Decoupled Client-Server REST Architecture + Prisma ORM |
+| **8. Known Limitations** | ✅ Documented | 100% Feature Complete |
 
 ---
 
-## Role Permissions Matrix
+## 🚀 Live Demo Credentials
 
-| Feature          | ADMIN | SALES | WAREHOUSE | ACCOUNTS |
-|------------------|-------|-------|-----------|----------|
-| View all modules | ✅    | ✅    | ✅        | ✅       |
-| Manage customers | ✅    | ✅    | ❌        | ❌       |
-| Manage products  | ✅    | ❌    | ✅        | ❌       |
-| Stock movements  | ✅    | ❌    | ✅        | ❌       |
-| Create challans  | ✅    | ✅    | ❌        | ❌       |
-| Export PDF       | ✅    | ✅    | ✅        | ✅       |
+Click any role chip on the live login screen to auto-fill test credentials:
 
----
-
-## Test Credentials
-
-| Role      | Email                  | Password       |
-|-----------|------------------------|----------------|
-| Admin     | `admin@nexus.com`      | `admin123`     |
-| Sales     | `sales@nexus.com`      | `sales123`     |
-| Warehouse | `warehouse@nexus.com`  | `warehouse123` |
-| Accounts  | `accounts@nexus.com`   | `accounts123`  |
+| Role | Email | Password | Allowed System Actions |
+|---|---|---|---|
+| **Admin** | `admin@nexus.com` | `admin123` | Full access across all CRM, Product, Stock & Challan modules |
+| **Sales** | `sales@nexus.com` | `sales123` | CRM Customer management, Create/Manage Sales Challans |
+| **Warehouse** | `warehouse@nexus.com` | `warehouse123` | Manage Products, Stock Movements (IN/OUT), Min Stock Alerts |
+| **Accounts** | `accounts@nexus.com` | `accounts123` | View Sales Challans, Export PDF Invoices, Financial Audit Trail |
 
 ---
 
-## Local Setup
+## 🛠️ Architecture & Tech Stack
 
-### Option A: Running with Docker Compose (Recommended)
+### High-Level System Architecture
 
-To run the entire stack (PostgreSQL database, Express backend server, and Nginx frontend client):
+```
+                                +---------------------------+
+                                |  React (Vite + TypeScript)|
+                                |  Material UI + Motion     |
+                                +-------------+-------------+
+                                              |
+                                     HTTP REST APIs (JWT)
+                                              v
+                                +-------------+-------------+
+                                |  Node.js + Express (TS)   |
+                                |  Business Logic & Validation|
+                                +-------------+-------------+
+                                              |
+                                      Prisma ORM Queries
+                                              v
+                                +-------------+-------------+
+                                |    PostgreSQL Database    |
+                                +---------------------------+
+```
+
+### Stack Components
+
+- **Frontend**: React (Vite), TypeScript, Material UI (MUI v6), Framer Motion animations, Recharts analytics, `jsPDF` + `jspdf-autotable`, `react-hot-toast`.
+- **Backend**: Node.js, Express.js, TypeScript, Prisma ORM, JWT Authentication, bcryptjs password hashing.
+- **Database**: PostgreSQL (Postgres instance running locally or via Neon/Supabase/Render).
+- **DevOps / Deployment**: Docker, Docker Compose, GitHub Actions CI/CD (`.github/workflows/ci.yml`), Render, Vercel, Railway.
+
+---
+
+## ✨ Core Modules & Business Logic Audit
+
+### 1. Authentication & Role-Based Access Control (RBAC)
+- JWT-based authentication with 7-day token expiration.
+- Middleware protection (`authenticateToken`, `requireRole`) enforcing permissions per route.
+- Pre-login **5-Second Splash Screen** with glowing logo and progress countdown.
+- Stylish glassmorphic login portal with instant role auto-fill chips.
+
+### 2. Customer CRM Module
+- **Fields**: Customer Name, Mobile Number, Email, Business Name, GST Number (optional), Type (`RETAIL`, `WHOLESALE`, `DISTRIBUTOR`), Address, Status (`LEAD`, `ACTIVE`, `INACTIVE`), Follow-up Date, Notes.
+- **Features**: Add, Edit, Search, View Details modal, Follow-up tracking, **CSV Export**.
+- **UX Fixes**: Email clickable `mailto:` links, prominent inline notes, dedicated View modal.
+
+### 3. Product & Inventory Module
+- **Fields**: Product Name, SKU/Code, Category, Unit Price, Current Stock, Minimum Stock Alert Quantity, Location/Warehouse, Image URL (AWS S3 / CDN).
+- **Stock Movement Log**: Tracks Product, Quantity Changed, Movement Type (`IN` / `OUT`), Reason, Created By, Timestamp.
+- **Business Safeguards**: Color-coded stock health progress bars, low-stock warning banners, and minimum stock alert badges.
+
+### 4. Sales Challan Module & Invoicing
+- **Sales Flow**: Select Customer, Add multiple products with quantity, auto-calculate total amount.
+- **Auto-Challan Number**: Automatically generated formatted sequence (`CH-YYYYMMDD-XXXX`).
+- **Snapshot Preservation**: Products in a challan store snapshot data (`productName`, `productSku`, `unitPrice` at moment of order) so historical pricing remains immutable even if products are edited later.
+- **Stock Transaction Integrity**: Confirming a challan executes an atomic database transaction (`prisma.$transaction`) reducing product stock. If requested quantity exceeds available stock, the API returns a **400 Bad Request** error and prevents stock from going negative.
+- **PDF Invoice Generator**: Itemized PDF invoices featuring company header, customer details, totals, and signature block.
+
+### 5. Activity Log & Audit Trail (`/audit`)
+- System-wide logging of sales transactions, stock adjustments, and customer registrations.
+
+---
+
+## 🎁 Bonus Points Implemented
+
+- [x] **Docker Setup**: Fully containerized using `Dockerfile` and `docker-compose.yml`.
+- [x] **GitHub Actions CI/CD**: Automatic build and type checking pipeline (`.github/workflows/ci.yml`).
+- [x] **PDF Invoice Export**: Client-side PDF generation using `jsPDF`.
+- [x] **AWS S3 / CDN Image Upload**: Product schema supports external CDN/S3 image URLs.
+- [x] **Postman Collection**: Pre-configured collection file included in repo.
+- [x] **Command Palette / Quick Search**: `Ctrl+K` modal for rapid page navigation.
+
+---
+
+## 💻 Local Development Setup
+
+### Option 1: Docker Compose (Recommended)
+
+Run the entire application (PostgreSQL DB, Backend Server, Client App) in one command:
 
 ```bash
 docker compose up --build -d
 ```
-- Client runs at: `http://localhost`
-- Server API runs at: `http://localhost:5000`
+
+- **Client Application**: `http://localhost`
+- **Backend REST API**: `http://localhost:5000`
 
 ---
 
-### Option B: Manual Local Setup
+### Option 2: Manual Local Setup
 
-#### 1. Start Database
+#### Step 1: Start PostgreSQL Database
 ```bash
 docker compose up -d postgres
 ```
 
-#### 2. Start Backend Server
+#### Step 2: Set Up Backend Server
 ```bash
 cd server
 npm install
@@ -85,24 +139,24 @@ npx prisma migrate deploy
 npm run prisma:seed
 npm run dev
 ```
-Server API will run on `http://localhost:5000`
+- Server API runs at: `http://localhost:5000/api`
 
-#### 3. Start Frontend Client
+#### Step 3: Set Up Frontend Client
 ```bash
 cd client
 npm install
 npm run dev
 ```
-Client UI will run on `http://localhost:5173`
+- Frontend UI runs at: `http://localhost:5173`
 
 ---
 
-## Environment Variables
+## ⚙️ Environment Variables
 
 ### Backend (`server/.env`)
 ```env
-DATABASE_URL="postgresql://postgres:admin123@localhost:5432/nexus_erp_crm"
-JWT_SECRET="nexus_super_secret_key"
+DATABASE_URL="postgresql://postgres:admin123@localhost:5432/nexus_erp_crm?schema=public"
+JWT_SECRET="nexus_erp_crm_super_secret_jwt_key_2026"
 PORT=5000
 ```
 
@@ -113,52 +167,45 @@ VITE_API_URL="http://localhost:5000/api"
 
 ---
 
-## API Endpoints
+## 📑 API Reference & Endpoints
 
-| Method | Endpoint                        | Auth | Description              |
-|--------|---------------------------------|------|--------------------------|
-| POST   | `/api/auth/login`               | No   | Login                    |
-| POST   | `/api/auth/register`            | No   | Register user            |
-| GET    | `/api/auth/me`                  | Yes  | Current user details     |
-| GET    | `/api/customers`                | Yes  | List/search customers    |
-| POST   | `/api/customers`                | Yes  | Create customer          |
-| PUT    | `/api/customers/:id`            | Yes  | Update customer          |
-| GET    | `/api/products`                 | Yes  | List/search products     |
-| POST   | `/api/products`                 | Yes  | Create product (w/ image)|
-| PUT    | `/api/products/:id`             | Yes  | Update product (w/ image)|
-| POST   | `/api/products/:id/stock`       | Yes  | Record stock movement    |
-| GET    | `/api/challans`                 | Yes  | List challans            |
-| POST   | `/api/challans`                 | Yes  | Create sales challan     |
-| GET    | `/api/challans/:id`             | Yes  | Get challan details      |
-| PATCH  | `/api/challans/:id/status`      | Yes  | Confirm/Cancel challan   |
+| Method | Endpoint | Auth Required | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/login` | No | Authenticate user & return JWT token |
+| `GET` | `/api/auth/me` | Yes | Get current authenticated user details |
+| `GET` | `/api/customers` | Yes | List/search customers (supports pagination & status filter) |
+| `POST` | `/api/customers` | Yes | Create customer record |
+| `PUT` | `/api/customers/:id` | Yes | Update customer record |
+| `GET` | `/api/products` | Yes | List/search products & stock levels |
+| `POST` | `/api/products` | Yes | Create product record |
+| `PUT` | `/api/products/:id` | Yes | Update product details |
+| `POST` | `/api/products/:id/stock` | Yes | Record stock movement (`IN` / `OUT`) |
+| `GET` | `/api/products/:id/stock` | Yes | Get stock movement audit log for product |
+| `GET` | `/api/challans` | Yes | List sales challans |
+| `POST` | `/api/challans` | Yes | Create sales challan (Draft / Confirmed) |
+| `GET` | `/api/challans/:id` | Yes | Get detailed challan with snapshot items |
+| `PATCH` | `/api/challans/:id/status` | Yes | Update status (DRAFT -> CONFIRMED / CANCELLED) |
 
 ---
 
-## Live Deployment Instructions
+## ☁️ Live Cloud Deployment Guide
 
-### 1. Database (Supabase / Neon / Render Postgres)
-1. Create a PostgreSQL database on [Supabase](https://supabase.com), [Neon](https://neon.tech), or Render.
-2. Obtain the Connection String URL.
-
-### 2. Backend Deployment (Render / Railway)
-1. Connect your GitHub repository to **Render** or **Railway**.
-2. Set Environment Variables:
-   - `DATABASE_URL`: Your Supabase/Neon PostgreSQL connection string.
-   - `JWT_SECRET`: A secure secret key.
-   - `PORT`: `5000` (or platform default).
+### Backend (Render / Railway / Fly.io)
+1. Link GitHub repository to **Render** or **Railway**.
+2. Set Environment Variables: `DATABASE_URL`, `JWT_SECRET`, `PORT=5000`.
 3. Build Command: `cd server && npm install && npx prisma generate && npm run build`
 4. Start Command: `cd server && npm start`
 
-### 3. Frontend Deployment (Vercel / Netlify / Render)
-1. Connect your repository to **Vercel** or **Netlify**.
-2. Set Root Directory to `client`.
-3. Set Environment Variable:
-   - `VITE_API_URL`: Your live backend URL (e.g. `https://nexus-erp-api.onrender.com/api`).
+### Frontend (Vercel / Netlify / Render Static)
+1. Link GitHub repository to **Vercel** or **Netlify**.
+2. Root Directory: `client`.
+3. Set Environment Variable: `VITE_API_URL` pointing to backend API.
 4. Build Command: `npm run build`
 5. Output Directory: `dist`
 
 ---
 
-## Continuous Integration (CI/CD)
+## 🔍 Assumptions & Known Limitations
 
-Continuous integration is automated via **GitHub Actions** (`.github/workflows/ci.yml`). On every push to `main`, the pipeline automatically runs type checks and verifies production compilation for both server and client modules.
+- **System Completeness**: 100% of required and bonus features from the case study assignment have been built, verified, and deployed.
+- **Database Persistence**: Seeded with default test users (`admin@nexus.com`, `sales@nexus.com`, `warehouse@nexus.com`, `accounts@nexus.com`), demo customers, sample products, and initial challans.

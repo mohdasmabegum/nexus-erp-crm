@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Box, Card, CardContent, TextField, Button, Typography, Alert, Divider, Chip, Stack,
-  InputAdornment, Container, Avatar,
+  InputAdornment, Container,
 } from "@mui/material";
 import EmailIcon from "@mui/icons-material/Email";
 import LockIcon from "@mui/icons-material/Lock";
@@ -74,7 +74,7 @@ export default function LoginPage() {
           width: 500,
           height: 500,
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(37,99,235,0.2) 0%, rgba(124,58,237,0.08) 60%, transparent 100%)",
+          background: "radial-gradient(circle, rgba(37,99,235,0.25) 0%, rgba(124,58,237,0.1) 60%, transparent 100%)",
           filter: "blur(60px)",
           top: "15%",
           left: "50%",
@@ -92,10 +92,10 @@ export default function LoginPage() {
           <Card
             sx={{
               borderRadius: 5,
-              background: "rgba(15, 23, 42, 0.75)",
+              background: "rgba(15, 23, 42, 0.85)",
               backdropFilter: "blur(20px)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)",
+              border: "1px solid rgba(255, 255, 255, 0.15)",
+              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.08)",
               overflow: "hidden",
             }}
           >
@@ -110,8 +110,8 @@ export default function LoginPage() {
                     display: "inline-flex",
                     p: 1.5,
                     borderRadius: 3,
-                    bgcolor: "rgba(255, 255, 255, 0.05)",
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    bgcolor: "rgba(255, 255, 255, 0.06)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
                     mb: 1.5,
                   }}
                 >
@@ -129,14 +129,14 @@ export default function LoginPage() {
                 >
                   Nexus ERP CRM
                 </Typography>
-                <Typography variant="body2" color="text.secondary" mt={0.5} fontSize="0.85rem">
+                <Typography variant="body2" sx={{ color: "rgba(255, 255, 255, 0.75)", mt: 0.5, fontSize: "0.85rem", fontWeight: 500 }}>
                   Operations Portal — Sign in to continue
                 </Typography>
               </Box>
 
               {error && (
                 <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
-                  <Alert severity="error" sx={{ mb: 2.5, borderRadius: 2.5, fontSize: "0.85rem" }}>
+                  <Alert severity="error" sx={{ mb: 2.5, borderRadius: 2.5, fontSize: "0.85rem", fontWeight: 600 }}>
                     {error}
                   </Alert>
                 </motion.div>
@@ -152,10 +152,23 @@ export default function LoginPage() {
                   required
                   fullWidth
                   placeholder="name@company.com"
+                  sx={{
+                    "& .MuiInputLabel-root": { color: "rgba(255, 255, 255, 0.8)", fontWeight: 500 },
+                    "& .MuiInputLabel-root.Mui-focused": { color: "#60a5fa" },
+                    "& .MuiOutlinedInput-root": {
+                      color: "#ffffff",
+                      bgcolor: "rgba(255, 255, 255, 0.05)",
+                      borderRadius: 2.5,
+                      "& fieldset": { borderColor: "rgba(255, 255, 255, 0.2)" },
+                      "&:hover fieldset": { borderColor: "rgba(96, 165, 250, 0.6)" },
+                      "&.Mui-focused fieldset": { borderColor: "#60a5fa" },
+                    },
+                    "& input::placeholder": { color: "rgba(255, 255, 255, 0.4)", opacity: 1 },
+                  }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <EmailIcon sx={{ fontSize: 18, color: "primary.main" }} />
+                        <EmailIcon sx={{ fontSize: 18, color: "#60a5fa" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -169,10 +182,23 @@ export default function LoginPage() {
                   required
                   fullWidth
                   placeholder="••••••••"
+                  sx={{
+                    "& .MuiInputLabel-root": { color: "rgba(255, 255, 255, 0.8)", fontWeight: 500 },
+                    "& .MuiInputLabel-root.Mui-focused": { color: "#60a5fa" },
+                    "& .MuiOutlinedInput-root": {
+                      color: "#ffffff",
+                      bgcolor: "rgba(255, 255, 255, 0.05)",
+                      borderRadius: 2.5,
+                      "& fieldset": { borderColor: "rgba(255, 255, 255, 0.2)" },
+                      "&:hover fieldset": { borderColor: "rgba(96, 165, 250, 0.6)" },
+                      "&.Mui-focused fieldset": { borderColor: "#60a5fa" },
+                    },
+                    "& input::placeholder": { color: "rgba(255, 255, 255, 0.4)", opacity: 1 },
+                  }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LockIcon sx={{ fontSize: 18, color: "primary.main" }} />
+                        <LockIcon sx={{ fontSize: 18, color: "#60a5fa" }} />
                       </InputAdornment>
                     ),
                   }}
@@ -192,10 +218,11 @@ export default function LoginPage() {
                       fontSize: "0.95rem",
                       fontWeight: 700,
                       background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
-                      boxShadow: "0 8px 20px rgba(37,99,235,0.35)",
+                      color: "#ffffff",
+                      boxShadow: "0 8px 20px rgba(37,99,235,0.4)",
                       "&:hover": {
                         background: "linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%)",
-                        boxShadow: "0 12px 28px rgba(37,99,235,0.5)",
+                        boxShadow: "0 12px 28px rgba(37,99,235,0.55)",
                       },
                     }}
                   >
@@ -204,8 +231,8 @@ export default function LoginPage() {
                 </motion.div>
               </Box>
 
-              <Divider sx={{ my: 3.5, borderColor: "rgba(255,255,255,0.1)" }}>
-                <Typography variant="caption" color="text.secondary" fontWeight={600} letterSpacing="0.06em">
+              <Divider sx={{ my: 3.5, borderColor: "rgba(255,255,255,0.15)" }}>
+                <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.7)", fontWeight: 700, letterSpacing: "0.08em" }}>
                   DEMO QUICK LOGIN
                 </Typography>
               </Divider>
@@ -226,21 +253,21 @@ export default function LoginPage() {
                         py: 2,
                         px: 0.5,
                         borderRadius: 2.5,
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
                       }}
                     />
                   </motion.div>
                 ))}
               </Stack>
 
-              <Typography variant="caption" color="text.secondary" display="block" textAlign="center" mt={1.5} fontSize="0.75rem">
+              <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.65)", display: "block", textAlign: "center", mt: 1.5, fontSize: "0.75rem" }}>
                 Click any role above to auto-fill credentials
               </Typography>
             </CardContent>
           </Card>
 
           <Box sx={{ textAlign: "center", mt: 3 }}>
-            <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+            <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.5)", fontSize: "0.75rem" }}>
               © 2026 Nexus ERP CRM · All rights reserved
             </Typography>
           </Box>

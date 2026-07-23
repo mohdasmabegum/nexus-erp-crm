@@ -21,14 +21,14 @@ export const getTheme = (mode: "light" | "dark") =>
       error: { main: "#dc2626", light: "#ef4444", dark: "#b91c1c" },
       info: { main: "#0891b2", light: "#06b6d4", dark: "#0e7490" },
       background: {
-        default: mode === "light" ? "#f1f5f9" : "#0a0f1e",
+        default: mode === "light" ? "#f8fafc" : "#090d16",
         paper: mode === "light" ? "#ffffff" : "#111827",
       },
       text: {
-        primary: mode === "light" ? "#0f172a" : "#f1f5f9",
-        secondary: mode === "light" ? "#475569" : "#94a3b8",
+        primary: mode === "light" ? "#0f172a" : "#f8fafc",
+        secondary: mode === "light" ? "#334155" : "#cbd5e1", // High contrast light slate in dark mode, crisp dark slate in light mode
       },
-      divider: mode === "light" ? "rgba(15,23,42,0.08)" : "rgba(255,255,255,0.06)",
+      divider: mode === "light" ? "rgba(15,23,42,0.1)" : "rgba(255,255,255,0.1)",
     },
     typography: {
       fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif",
@@ -79,9 +79,9 @@ export const getTheme = (mode: "light" | "dark") =>
           root: {
             boxShadow: mode === "light"
               ? "0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04)"
-              : "0 1px 3px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04)",
+              : "0 1px 3px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08)",
             borderRadius: 16,
-            border: mode === "light" ? "1px solid rgba(15,23,42,0.06)" : "1px solid rgba(255,255,255,0.05)",
+            border: mode === "light" ? "1px solid rgba(15,23,42,0.08)" : "1px solid rgba(255,255,255,0.08)",
             backgroundImage: "none",
             transition: "box-shadow 0.2s ease, transform 0.2s ease",
           },
@@ -125,15 +125,16 @@ export const getTheme = (mode: "light" | "dark") =>
             fontSize: "0.7rem",
             textTransform: "uppercase",
             letterSpacing: "0.06em",
-            color: mode === "light" ? "#64748b" : "#94a3b8",
-            borderBottom: mode === "light" ? "2px solid rgba(15,23,42,0.08)" : "2px solid rgba(255,255,255,0.07)",
+            color: mode === "light" ? "#475569" : "#cbd5e1", // High contrast headers
+            borderBottom: mode === "light" ? "2px solid rgba(15,23,42,0.1)" : "2px solid rgba(255,255,255,0.1)",
             whiteSpace: "nowrap",
             padding: "12px 16px",
           },
           body: {
             padding: "10px 16px",
-            borderBottom: mode === "light" ? "1px solid rgba(15,23,42,0.05)" : "1px solid rgba(255,255,255,0.04)",
+            borderBottom: mode === "light" ? "1px solid rgba(15,23,42,0.06)" : "1px solid rgba(255,255,255,0.06)",
             fontSize: "0.875rem",
+            color: mode === "light" ? "#0f172a" : "#f8fafc",
           },
         },
       },
@@ -141,7 +142,7 @@ export const getTheme = (mode: "light" | "dark") =>
         styleOverrides: {
           root: {
             "&.MuiTableRow-hover:hover": {
-              backgroundColor: mode === "light" ? "rgba(37,99,235,0.04)" : "rgba(37,99,235,0.08)",
+              backgroundColor: mode === "light" ? "rgba(37,99,235,0.05)" : "rgba(37,99,235,0.12)",
             },
           },
         },
@@ -171,10 +172,10 @@ export const getTheme = (mode: "light" | "dark") =>
             "& .MuiOutlinedInput-root": {
               borderRadius: 10,
               "& fieldset": {
-                borderColor: mode === "light" ? "rgba(15,23,42,0.15)" : "rgba(255,255,255,0.1)",
+                borderColor: mode === "light" ? "rgba(15,23,42,0.2)" : "rgba(255,255,255,0.2)",
               },
               "&:hover fieldset": {
-                borderColor: mode === "light" ? "rgba(37,99,235,0.4)" : "rgba(59,130,246,0.4)",
+                borderColor: mode === "light" ? "rgba(37,99,235,0.6)" : "rgba(96,165,250,0.6)",
               },
             },
           },
@@ -186,7 +187,7 @@ export const getTheme = (mode: "light" | "dark") =>
             borderRadius: 20,
             boxShadow: mode === "light"
               ? "0 25px 50px -12px rgba(0,0,0,0.25)"
-              : "0 25px 50px rgba(0,0,0,0.6)",
+              : "0 25px 50px rgba(0,0,0,0.7)",
           },
         },
       },
@@ -208,6 +209,7 @@ export const getTheme = (mode: "light" | "dark") =>
             fontWeight: 500,
             padding: "6px 12px",
             backgroundColor: mode === "light" ? "#0f172a" : "#1e293b",
+            color: "#ffffff",
           },
           arrow: {
             color: mode === "light" ? "#0f172a" : "#1e293b",

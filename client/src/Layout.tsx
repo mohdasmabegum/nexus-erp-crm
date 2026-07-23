@@ -9,6 +9,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import LogoutIcon from "@mui/icons-material/Logout";
+import WarehouseIcon from "@mui/icons-material/Warehouse";
 import { useAuth } from "./AuthContext";
 
 const DRAWER_WIDTH = 220;
@@ -17,6 +18,7 @@ const navItems = [
   { label: "Dashboard", icon: <DashboardIcon />, path: "/" },
   { label: "Customers", icon: <PeopleIcon />, path: "/customers" },
   { label: "Products", icon: <InventoryIcon />, path: "/products" },
+  { label: "Inventory", icon: <WarehouseIcon />, path: "/inventory" },
   { label: "Challans", icon: <ReceiptIcon />, path: "/challans" },
 ];
 

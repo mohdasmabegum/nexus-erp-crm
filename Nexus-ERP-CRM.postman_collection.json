@@ -1,0 +1,194 @@
+{
+  "info": {
+    "name": "Nexus ERP CRM API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "https://nexus-erp-crm-mohdasmabegums-projects.vercel.app/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "exec": ["var r = pm.response.json(); if(r.token) pm.collectionVariables.set('token', r.token);"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"email\":\"admin@nexus.com\",\"password\":\"admin123\"}" },
+            "url": "{{base_url}}/auth/login"
+          }
+        },
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"name\":\"Test User\",\"email\":\"test@nexus.com\",\"password\":\"test123\",\"role\":\"SALES\"}" },
+            "url": "{{base_url}}/auth/register"
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "List Customers",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/customers?page=1&limit=10&search=", "query": [{"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"search","value":""},{"key":"status","value":"","disabled":true}] }
+          }
+        },
+        {
+          "name": "Get Customer",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/customers/:id"
+          }
+        },
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"name\":\"John Doe\",\"mobile\":\"9876543210\",\"email\":\"john@example.com\",\"businessName\":\"Doe Traders\",\"gst\":\"22AAAAA0000A1Z5\",\"type\":\"WHOLESALE\",\"address\":\"123 Main St\",\"status\":\"LEAD\",\"followUpDate\":\"2025-08-01\",\"notes\":\"Interested in bulk order\"}" },
+            "url": "{{base_url}}/customers"
+          }
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"status\":\"ACTIVE\",\"notes\":\"Follow-up done, order confirmed\"}" },
+            "url": "{{base_url}}/customers/:id"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "List Products",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/products?page=1&limit=10&search=", "query": [{"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"search","value":""}] }
+          }
+        },
+        {
+          "name": "Get Product",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/products/:id"
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"name\":\"Widget A\",\"sku\":\"WGT-001\",\"category\":\"Electronics\",\"unitPrice\":299.99,\"stock\":100,\"minStockAlert\":10,\"location\":\"Rack A1\",\"imageUrl\":\"\"}" },
+            "url": "{{base_url}}/products"
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"unitPrice\":349.99,\"minStockAlert\":15,\"location\":\"Rack B2\"}" },
+            "url": "{{base_url}}/products/:id"
+          }
+        },
+        {
+          "name": "Get Stock Movements",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/products/:id/stock?page=1&limit=15", "query": [{"key":"page","value":"1"},{"key":"limit","value":"15"}] }
+          }
+        },
+        {
+          "name": "Add Stock Movement",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"quantity\":50,\"type\":\"IN\",\"reason\":\"Purchase order received\"}" },
+            "url": "{{base_url}}/products/:id/stock"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Challans",
+      "item": [
+        {
+          "name": "List Challans",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{base_url}}/challans?page=1&limit=10", "query": [{"key":"page","value":"1"},{"key":"limit","value":"10"},{"key":"status","value":"","disabled":true}] }
+          }
+        },
+        {
+          "name": "Get Challan",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": "{{base_url}}/challans/:id"
+          }
+        },
+        {
+          "name": "Create Challan",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"customerId\":\"<customer_id>\",\"status\":\"DRAFT\",\"items\":[{\"productId\":\"<product_id>\",\"quantity\":5}]}" },
+            "url": "{{base_url}}/challans"
+          }
+        },
+        {
+          "name": "Confirm Challan",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"status\":\"CONFIRMED\"}" },
+            "url": "{{base_url}}/challans/:id/status"
+          }
+        },
+        {
+          "name": "Cancel Challan",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"status\":\"CANCELLED\"}" },
+            "url": "{{base_url}}/challans/:id/status"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/health"
+      }
+    }
+  ]
+}

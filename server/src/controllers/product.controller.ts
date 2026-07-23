@@ -60,6 +60,28 @@ export const updateProduct = async (req: Request, res: Response) => {
   }
 };
 
+export const getStockMovements = async (req: Request, res: Response) => {
+  const page: number = parseInt((req.query.page as string) ?? "1");
+  const limit: number = parseInt((req.query.limit as string) ?? "20");
+  const skip = (page - 1) * limit;
+  const productId: string = req.params.id as string;
+
+  const product = await prisma.product.findUnique({ where: { id: productId } });
+  if (!product) return res.status(404).json({ success: false, message: "Product not found" });
+
+  const [movements, total] = await Promise.all([
+    prisma.stockMovement.findMany({
+      where: { productId },
+      skip, take: limit,
+      orderBy: { createdAt: "desc" },
+      include: { user: { select: { name: true } } },
+    }),
+    prisma.stockMovement.count({ where: { productId } }),
+  ]);
+
+  return res.json({ success: true, data: movements, total, page, product });
+};
+
 export const addStockMovement = async (req: Request & { user?: any }, res: Response) => {
   try {
     const { quantity, type, reason } = req.body;

@@ -9,6 +9,7 @@ import DashboardPage from "./pages/DashboardPage";
 import CustomersPage from "./pages/CustomersPage";
 import ProductsPage from "./pages/ProductsPage";
 import ChallansPage from "./pages/ChallansPage";
+import InventoryPage from "./pages/InventoryPage";
 
 const theme = createTheme({ palette: { mode: "light", primary: { main: "#1565c0" } } });
 
@@ -26,6 +27,7 @@ function App() {
         <Route path="/customers" element={<PrivateRoute><CustomersPage /></PrivateRoute>} />
         <Route path="/products" element={<PrivateRoute><ProductsPage /></PrivateRoute>} />
         <Route path="/challans" element={<PrivateRoute><ChallansPage /></PrivateRoute>} />
+        <Route path="/inventory" element={<PrivateRoute><InventoryPage /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>

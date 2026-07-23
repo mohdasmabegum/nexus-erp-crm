@@ -49,7 +49,8 @@ export default function LoginPage() {
         <Card sx={{ width: { xs: "100%", sm: 420 } }}>
           <CardContent sx={{ p: 4 }}>
             <Box sx={{ textAlign: "center", mb: 3 }}>
-              <Typography variant="h4" fontWeight={800} sx={{ color: "primary.main", letterSpacing: "-1px" }}>🔷 Nexus ERP</Typography>
+              <Box component="img" src="/logo.png" alt="Nexus ERP" sx={{ height: 56, width: "auto", mb: 1.5, objectFit: "contain" }} />
+              <Typography variant="h5" fontWeight={800} sx={{ color: "primary.main", letterSpacing: "-0.5px" }}>Nexus ERP CRM</Typography>
               <Typography variant="body2" color="text.secondary" mt={0.5}>Operations Portal — Sign in to continue</Typography>
             </Box>
 
@@ -76,6 +77,12 @@ export default function LoginPage() {
             </Typography>
           </CardContent>
         </Card>
+
+        <Box sx={{ textAlign: "center", mt: 3 }}>
+          <Typography variant="caption" color="text.secondary">
+            © {new Date().getFullYear()} Nexus ERP CRM. All rights reserved.
+          </Typography>
+        </Box>
       </motion.div>
     </Box>
   );

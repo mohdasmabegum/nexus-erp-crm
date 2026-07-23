@@ -41,12 +41,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       <AppBar position="fixed" elevation={0} sx={{ zIndex: (t) => t.zIndex.drawer + 1, borderBottom: "1px solid", borderColor: "divider", bgcolor: "background.paper", color: "text.primary" }}>
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Typography variant="h6" fontWeight={800} sx={{ color: "primary.main", letterSpacing: "-0.5px" }}>
-              🔷 Nexus ERP
-            </Typography>
-            <Typography variant="caption" sx={{ color: "text.secondary", display: { xs: "none", sm: "block" } }}>
-              Operations Portal
-            </Typography>
+            <Box component="img" src="/logo.png" alt="Nexus ERP" sx={{ height: 36, width: "auto", objectFit: "contain" }} />
+            <Box>
+              <Typography variant="h6" fontWeight={800} sx={{ color: "primary.main", letterSpacing: "-0.5px", lineHeight: 1.1 }}>Nexus ERP</Typography>
+              <Typography variant="caption" sx={{ color: "text.secondary", display: { xs: "none", sm: "block" }, lineHeight: 1 }}>Operations Portal</Typography>
+            </Box>
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Tooltip title={mode === "light" ? "Dark mode" : "Light mode"}>
@@ -70,10 +69,12 @@ export default function Layout({ children }: { children: ReactNode }) {
 
       <Drawer variant="permanent" sx={{ width: DRAWER_WIDTH, "& .MuiDrawer-paper": { width: DRAWER_WIDTH, boxSizing: "border-box" } }}>
         <Toolbar />
-        <Box sx={{ p: 2 }}>
-          <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.4)", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" }}>
-            Navigation
-          </Typography>
+        <Box sx={{ p: 2, display: "flex", alignItems: "center", gap: 1.5, borderBottom: "1px solid rgba(255,255,255,0.1)", mb: 1 }}>
+          <Box component="img" src="/logo.png" alt="Nexus ERP" sx={{ height: 32, width: "auto", objectFit: "contain" }} />
+          <Box>
+            <Typography variant="subtitle2" sx={{ color: "#fff", fontWeight: 800, lineHeight: 1.1 }}>Nexus ERP</Typography>
+            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.65rem" }}>CRM Portal</Typography>
+          </Box>
         </Box>
         <List sx={{ px: 1 }}>
           {navItems.map((item) => {
@@ -102,7 +103,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         </List>
       </Drawer>
 
-      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, minHeight: "100vh", bgcolor: "background.default" }}>
+      <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8, minHeight: "calc(100vh - 64px)", bgcolor: "background.default", display: "flex", flexDirection: "column" }}>
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, y: 12 }}
@@ -111,6 +112,22 @@ export default function Layout({ children }: { children: ReactNode }) {
         >
           {children}
         </motion.div>
+
+        {/* Footer */}
+        <Box component="footer" sx={{ mt: "auto", pt: 4, pb: 2, borderTop: "1px solid", borderColor: "divider" }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 1 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box component="img" src="/logo.png" alt="Nexus ERP" sx={{ height: 22, width: "auto", opacity: 0.7 }} />
+              <Typography variant="caption" color="text.secondary" fontWeight={600}>Nexus ERP CRM</Typography>
+            </Box>
+            <Typography variant="caption" color="text.secondary">
+              © {new Date().getFullYear()} Nexus ERP CRM. All rights reserved.
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Built with ❤️ — Node.js · React · PostgreSQL
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     </Box>
   );

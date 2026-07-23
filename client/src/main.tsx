@@ -13,6 +13,8 @@ import CustomersPage from "./pages/CustomersPage";
 import ProductsPage from "./pages/ProductsPage";
 import ChallansPage from "./pages/ChallansPage";
 import InventoryPage from "./pages/InventoryPage";
+import ProfilePage from "./pages/ProfilePage";
+import SettingsPage from "./pages/SettingsPage";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -34,6 +36,8 @@ function ThemedApp() {
             <Route path="/products" element={<PrivateRoute><ProductsPage /></PrivateRoute>} />
             <Route path="/inventory" element={<PrivateRoute><InventoryPage /></PrivateRoute>} />
             <Route path="/challans" element={<PrivateRoute><ChallansPage /></PrivateRoute>} />
+            <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
+            <Route path="/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

@@ -16,7 +16,7 @@ export const getChallans = async (req: Request, res: Response) => {
   const [challans, total] = await Promise.all([
     prisma.challan.findMany({
       where, skip, take: limit, orderBy: { createdAt: "desc" },
-      include: { customer: { select: { name: true, mobile: true } }, user: { select: { name: true } } },
+      include: { customer: { select: { name: true, mobile: true } }, user: { select: { name: true } }, items: { select: { id: true, productName: true } } },
     }),
     prisma.challan.count({ where }),
   ]);

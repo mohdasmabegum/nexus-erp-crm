@@ -13,11 +13,11 @@
 |---|---|---|---|
 | 1 | **GitHub Repository Link** | ✅ Complete | [github.com/mohdasmabegum/nexus-erp-crm](https://github.com/mohdasmabegum/nexus-erp-crm) |
 | 2 | **Live Frontend Web App URL** | ✅ Deployed | [nexus-erp-crm-beta.vercel.app](https://nexus-erp-crm-beta.vercel.app) |
-| 3 | **Live Backend API URL** | ✅ Deployed | [nexus-erp-crm-api.onrender.com/api](https://nexus-erp-crm-api.onrender.com/api) |
+| 3 | **Live Backend API URL** | ✅ Deployed | [nexus-erp-crm-beta.vercel.app/api](https://nexus-erp-crm-beta.vercel.app/api) |
 | 4 | **Test Login Credentials** | ✅ Provided | Admin, Sales, Warehouse, Accounts (See table below) |
 | 5 | **Postman Collection** | ✅ Included | [`Nexus-ERP-CRM.postman_collection.json`](./Nexus-ERP-CRM.postman_collection.json) |
 | 6 | **README Setup Instructions** | ✅ Documented | Local & Docker Setup, Environment Variables, Cloud Deployment |
-| 7 | **Architecture Explanation** | ✅ Documented | Client-Server Decoupled Architecture, Database Schema |
+| 7 | **Architecture Explanation** | ✅ Documented | Client-Server Decoupled Architecture + Vercel Monorepo Serverless API |
 | 8 | **Known Limitations** | ✅ Documented | 100% Feature Complete |
 
 ---
@@ -37,7 +37,7 @@ Click any role chip on the live login screen to auto-fill demo credentials:
 
 ## 🏗️ Architecture & Database Design
 
-### High-Level System Architecture
+### High-Level System Architecture (Vercel Unified Monorepo)
 
 ```
 +-------------------------------------------------------------------+
@@ -49,8 +49,8 @@ Click any role chip on the live login screen to auto-fill demo credentials:
                                   | REST API Requests (JWT Auth Header)
                                   v
 +---------------------------------+---------------------------------+
-|                         BACKEND SERVER                            |
-|  Node.js + Express + TypeScript + Prisma ORM                      |
+|               BACKEND API (Vercel Serverless Function)            |
+|  Node.js + Express + TypeScript + Prisma ORM (`/api/index.ts`)    |
 |  Input Validation + Role RBAC Middleware + Transaction Safety     |
 +---------------------------------+---------------------------------+
                                   |
@@ -193,17 +193,18 @@ VITE_API_URL="http://localhost:5000/api"
 
 ---
 
-## ☁️ Deployment Guide
+## ☁️ Deployment Guide (Vercel Monorepo Deployment)
 
-### Deployment Options Used:
-1. **Frontend**: Deployed on [Vercel](https://vercel.com) (Static React site with Vite builder).
-2. **Backend API**: Deployed on [Render](https://render.com) (Node.js web service).
-3. **Database**: Managed PostgreSQL instance (Supabase / Neon / Render Postgres).
+### Vercel Unified Deployment:
+The project uses a unified Vercel monorepo configuration (`vercel.json`) serving both the **React Frontend** and **Node.js Express Serverless Backend** (`api/index.ts` -> `server/src/app.ts`) on Vercel:
+
+- **Live Frontend**: [https://nexus-erp-crm-beta.vercel.app](https://nexus-erp-crm-beta.vercel.app)
+- **Live Backend API**: [https://nexus-erp-crm-beta.vercel.app/api](https://nexus-erp-crm-beta.vercel.app/api)
 
 ### Postman Collection Instructions:
 1. Open Postman.
 2. Click **Import** and select [`Nexus-ERP-CRM.postman_collection.json`](./Nexus-ERP-CRM.postman_collection.json).
-3. Set the `baseUrl` variable to `https://nexus-erp-crm-api.onrender.com/api` (or `http://localhost:5000/api`).
+3. Set the `baseUrl` variable to `https://nexus-erp-crm-beta.vercel.app/api` (or `http://localhost:5000/api`).
 
 ---
 

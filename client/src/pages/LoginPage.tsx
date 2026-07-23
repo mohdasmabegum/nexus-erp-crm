@@ -21,7 +21,7 @@ export default function LoginPage() {
       login(data.token, data.user);
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message ?? "Login failed");
+      setError(err.response?.data?.message || err.message || "Login failed");
     } finally {
       setLoading(false);
     }

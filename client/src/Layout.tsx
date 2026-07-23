@@ -121,7 +121,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               <Typography variant="caption" color="text.secondary" fontWeight={600}>Nexus ERP CRM</Typography>
             </Box>
             <Typography variant="caption" color="text.secondary">
-              © {new Date().getFullYear()} Nexus ERP CRM. All rights reserved.
+              © 2026 Nexus ERP CRM. All rights reserved.
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Built with ❤️ — Node.js · React · PostgreSQL

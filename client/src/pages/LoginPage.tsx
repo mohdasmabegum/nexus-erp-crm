@@ -80,7 +80,7 @@ export default function LoginPage() {
 
         <Box sx={{ textAlign: "center", mt: 3 }}>
           <Typography variant="caption" color="text.secondary">
-            © {new Date().getFullYear()} Nexus ERP CRM. All rights reserved.
+            © 2026 Nexus ERP CRM. All rights reserved.
           </Typography>
         </Box>
       </motion.div>

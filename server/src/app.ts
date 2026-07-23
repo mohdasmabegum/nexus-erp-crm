@@ -15,11 +15,11 @@ app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.get("/health", (_, res) => res.json({ success: true, message: "Nexus ERP CRM API Running" }));
+app.get(["/health", "/api/health"], (_, res) => res.json({ success: true, message: "Nexus ERP CRM API Running" }));
 
-app.use("/api/auth", authRoutes);
-app.use("/api/customers", customerRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/challans", challanRoutes);
+app.use(["/api/auth", "/auth"], authRoutes);
+app.use(["/api/customers", "/customers"], customerRoutes);
+app.use(["/api/products", "/products"], productRoutes);
+app.use(["/api/challans", "/challans"], challanRoutes);
 
 export default app;

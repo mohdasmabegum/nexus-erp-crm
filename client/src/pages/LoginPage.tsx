@@ -1,16 +1,26 @@
 import { useState, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Box, Card, CardContent, TextField, Button, Typography, Alert, Divider, Chip, Stack } from "@mui/material";
+import {
+  Box, Card, CardContent, TextField, Button, Typography, Alert, Divider, Chip, Stack,
+  InputAdornment, Container, Avatar,
+} from "@mui/material";
+import EmailIcon from "@mui/icons-material/Email";
+import LockIcon from "@mui/icons-material/Lock";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
+import WarehouseIcon from "@mui/icons-material/Warehouse";
+import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import toast from "react-hot-toast";
 import api from "../api";
 import { useAuth } from "../AuthContext";
 
 const credentials = [
-  { role: "ADMIN", email: "admin@nexus.com", password: "admin123", color: "error" as const },
-  { role: "SALES", email: "sales@nexus.com", password: "sales123", color: "primary" as const },
-  { role: "WAREHOUSE", email: "warehouse@nexus.com", password: "warehouse123", color: "warning" as const },
-  { role: "ACCOUNTS", email: "accounts@nexus.com", password: "accounts123", color: "success" as const },
+  { role: "ADMIN", name: "System Admin", email: "admin@nexus.com", password: "admin123", color: "error" as const, icon: <AdminPanelSettingsIcon fontSize="small" /> },
+  { role: "SALES", name: "Sales Executive", email: "sales@nexus.com", password: "sales123", color: "primary" as const, icon: <PointOfSaleIcon fontSize="small" /> },
+  { role: "WAREHOUSE", name: "Stock Manager", email: "warehouse@nexus.com", password: "warehouse123", color: "warning" as const, icon: <WarehouseIcon fontSize="small" /> },
+  { role: "ACCOUNTS", name: "Accountant", email: "accounts@nexus.com", password: "accounts123", color: "success" as const, icon: <AccountBalanceIcon fontSize="small" /> },
 ];
 
 export default function LoginPage() {
@@ -31,7 +41,7 @@ export default function LoginPage() {
       toast.success(`Welcome back, ${data.user.name}!`);
       navigate("/");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || "Invalid credentials. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -41,49 +51,201 @@ export default function LoginPage() {
     setEmail(cred.email);
     setPassword(cred.password);
     setError("");
+    toast.success(`Loaded demo credentials for ${cred.role}`);
   };
 
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", bgcolor: "background.default", p: 2 }}>
-      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: "easeOut" }}>
-        <Card sx={{ width: { xs: "100%", sm: 420 } }}>
-          <CardContent sx={{ p: 4 }}>
-            <Box sx={{ textAlign: "center", mb: 3 }}>
-              <Box component="img" src="/logo.png" alt="Nexus ERP" sx={{ height: 56, width: "auto", mb: 1.5, objectFit: "contain" }} />
-              <Typography variant="h5" fontWeight={800} sx={{ color: "primary.main", letterSpacing: "-0.5px" }}>Nexus ERP CRM</Typography>
-              <Typography variant="body2" color="text.secondary" mt={0.5}>Operations Portal — Sign in to continue</Typography>
-            </Box>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "radial-gradient(circle at 50% 30%, #0f172a 0%, #020617 100%)",
+        p: 2,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Background ambient glow shapes */}
+      <Box
+        sx={{
+          position: "absolute",
+          width: 500,
+          height: 500,
+          borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(37,99,235,0.2) 0%, rgba(124,58,237,0.08) 60%, transparent 100%)",
+          filter: "blur(60px)",
+          top: "15%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          pointerEvents: "none",
+        }}
+      />
 
-            {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{error}</Alert>}
+      <Container maxWidth="xs" sx={{ position: "relative", zIndex: 1 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 24, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+        >
+          <Card
+            sx={{
+              borderRadius: 5,
+              background: "rgba(15, 23, 42, 0.75)",
+              backdropFilter: "blur(20px)",
+              border: "1px solid rgba(255, 255, 255, 0.1)",
+              boxShadow: "0 25px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05)",
+              overflow: "hidden",
+            }}
+          >
+            {/* Top color bar */}
+            <Box sx={{ height: 4, background: "linear-gradient(90deg, #2563eb 0%, #7c3aed 50%, #06b6d4 100%)" }} />
 
-            <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <TextField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required fullWidth />
-              <TextField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required fullWidth />
-              <Button type="submit" variant="contained" size="large" disabled={loading} fullWidth sx={{ py: 1.5 }}>
-                {loading ? "Signing in..." : "Sign In"}
-              </Button>
-            </Box>
+            <CardContent sx={{ p: { xs: 3, sm: 4 } }}>
+              {/* Header with logo & title */}
+              <Box sx={{ textAlign: "center", mb: 3 }}>
+                <Box
+                  sx={{
+                    display: "inline-flex",
+                    p: 1.5,
+                    borderRadius: 3,
+                    bgcolor: "rgba(255, 255, 255, 0.05)",
+                    border: "1px solid rgba(255, 255, 255, 0.08)",
+                    mb: 1.5,
+                  }}
+                >
+                  <Box component="img" src="/logo.png" alt="Nexus ERP" sx={{ height: 48, width: "auto", objectFit: "contain" }} />
+                </Box>
+                <Typography
+                  variant="h5"
+                  fontWeight={900}
+                  sx={{
+                    background: "linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    letterSpacing: "-0.02em",
+                  }}
+                >
+                  Nexus ERP CRM
+                </Typography>
+                <Typography variant="body2" color="text.secondary" mt={0.5} fontSize="0.85rem">
+                  Operations Portal — Sign in to continue
+                </Typography>
+              </Box>
 
-            <Divider sx={{ my: 3 }}><Typography variant="caption" color="text.secondary">Quick Login</Typography></Divider>
+              {error && (
+                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
+                  <Alert severity="error" sx={{ mb: 2.5, borderRadius: 2.5, fontSize: "0.85rem" }}>
+                    {error}
+                  </Alert>
+                </motion.div>
+              )}
 
-            <Stack direction="row" flexWrap="wrap" gap={1} justifyContent="center">
-              {credentials.map((c) => (
-                <Chip key={c.role} label={c.role} color={c.color} size="small" clickable onClick={() => fillCredential(c)}
-                  sx={{ fontWeight: 700 }} />
-              ))}
-            </Stack>
-            <Typography variant="caption" color="text.secondary" display="block" textAlign="center" mt={1}>
-              Click a role to auto-fill credentials
+              {/* Login Form */}
+              <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+                <TextField
+                  label="Email Address"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  fullWidth
+                  placeholder="name@company.com"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <EmailIcon sx={{ fontSize: 18, color: "primary.main" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+                <TextField
+                  label="Password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  fullWidth
+                  placeholder="••••••••"
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <LockIcon sx={{ fontSize: 18, color: "primary.main" }} />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    size="large"
+                    disabled={loading}
+                    endIcon={<ArrowForwardIcon />}
+                    fullWidth
+                    sx={{
+                      py: 1.4,
+                      borderRadius: 3,
+                      fontSize: "0.95rem",
+                      fontWeight: 700,
+                      background: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)",
+                      boxShadow: "0 8px 20px rgba(37,99,235,0.35)",
+                      "&:hover": {
+                        background: "linear-gradient(135deg, #1d4ed8 0%, #6d28d9 100%)",
+                        boxShadow: "0 12px 28px rgba(37,99,235,0.5)",
+                      },
+                    }}
+                  >
+                    {loading ? "Signing in..." : "Sign In to Portal"}
+                  </Button>
+                </motion.div>
+              </Box>
+
+              <Divider sx={{ my: 3.5, borderColor: "rgba(255,255,255,0.1)" }}>
+                <Typography variant="caption" color="text.secondary" fontWeight={600} letterSpacing="0.06em">
+                  DEMO QUICK LOGIN
+                </Typography>
+              </Divider>
+
+              {/* Quick Login Roles */}
+              <Stack direction="row" flexWrap="wrap" gap={1} justifyContent="center">
+                {credentials.map((c) => (
+                  <motion.div key={c.role} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Chip
+                      icon={c.icon}
+                      label={c.role}
+                      color={c.color}
+                      clickable
+                      onClick={() => fillCredential(c)}
+                      sx={{
+                        fontWeight: 700,
+                        fontSize: "0.75rem",
+                        py: 2,
+                        px: 0.5,
+                        borderRadius: 2.5,
+                        boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
+                      }}
+                    />
+                  </motion.div>
+                ))}
+              </Stack>
+
+              <Typography variant="caption" color="text.secondary" display="block" textAlign="center" mt={1.5} fontSize="0.75rem">
+                Click any role above to auto-fill credentials
+              </Typography>
+            </CardContent>
+          </Card>
+
+          <Box sx={{ textAlign: "center", mt: 3 }}>
+            <Typography variant="caption" color="text.secondary" fontSize="0.75rem">
+              © 2026 Nexus ERP CRM · All rights reserved
             </Typography>
-          </CardContent>
-        </Card>
-
-        <Box sx={{ textAlign: "center", mt: 3 }}>
-          <Typography variant="caption" color="text.secondary">
-            © 2026 Nexus ERP CRM. All rights reserved.
-          </Typography>
-        </Box>
-      </motion.div>
+          </Box>
+        </motion.div>
+      </Container>
     </Box>
   );
 }

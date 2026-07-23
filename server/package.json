@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "prisma generate && tsc",
-    "start": "npx prisma migrate deploy && node dist/server.js",
+    "start": "prisma migrate deploy && node dist/server.js",
     "railway:deploy": "npx prisma migrate deploy && npm run start",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
@@ -23,6 +23,7 @@
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
+    "prisma": "^6.0.0",
     "tsx": "^4.19.2",
     "zod": "^3.23.8"
   },
@@ -33,7 +34,6 @@
     "@types/jsonwebtoken": "^9.0.7",
     "@types/morgan": "^1.9.9",
     "@types/node": "^22.10.0",
-    "prisma": "^6.0.0",
     "typescript": "^5.7.2"
   }
 }

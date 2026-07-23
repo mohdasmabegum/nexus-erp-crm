@@ -10,7 +10,10 @@ import challanRoutes from "./routes/challan.routes";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: (origin, cb) => cb(null, true),
+  credentials: true
+}));
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
